@@ -1,44 +1,6 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {#    <h1>{{ title }}</h1>#}
-
-    {#    <div>#}
-    {#        Here's gonna be list of all the created assets <br>TODO#}
-    {#        <br><br>#}
-    {#        <fieldset>#}
-    {#            <legend>#}
-    {#                <h3>New Asset</h3>#}
-    {#            </legend>#}
-    {#            <div  class="account-details">#}
-    {#                <div class="bg-amber-200"><label>Asset Name*</label><input type="text" name="name" required></div>#}
-    {#                <div><label>Inventory Number*</label><input type="text" name="name" required></div>#}
-    {#                <div><label>Supplier</label><input type="text" name="name"></div>#}
-    {#                <div><label>Manufacturer</label><input type="password" name="name"></div>#}
-    {#                <div><label>Price*</label><input type="text" name="name" required></div>#}
-    {#                <div><label>Guarantee Period</label><input type="text" name="name"></div>#}
-    {#                <div><label>Subsumption Date</label><input type="text" name="name"></div>#}
-    {#                <div><label>Elimination Date</label><input type="text" name="name"></div>#}
-    {#                <label>Asset Type*#}
-    {#                    <select>#}
-    {#                        <option value=""></option>#}
-    {#                        <option value="Tangible">Tangible</option>#}
-    {#                        <option value="Intangible">Intangible</option>#}
-    {#                    </select></label>#}
-
-    {#                <div><label>Assigned Person</label><input type="text" name="name"></div>#}
-    {#            </div>#}
-    {#            <button type="submit" href="/">Submit Asset</button>#}
-    {#            <br><br>#}
-    {#            <fieldset><legend><h3>List of Assets</h3></legend>#}
-    {#                <ul>#}
-    {#                    {% for asset in assets %}#}
-    {#                        <li>#}
-    {#                            {{ asset.asset|upper }} - {{ asset.id }}#}
-    {#                        </li>#}
-    {#                    {% endfor %}#}
-    {#                </ul><fieldset>#}
-    {#    </div>#}
     <div
             class="flex h-screen bg-gray-50 dark:bg-gray-900"
             :class="{ 'overflow-hidden': isSideMenuOpen }"
@@ -203,12 +165,12 @@
                             <h2
                                     class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
                             >
-                                Nový majetek
+                                Editovat majetek
                             </h2>
                             {{ form_start(form) }}
                             {{ form_widget(form) }}
                             <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                            >Přidat majetek</button>
+                            >Uložit úpravy</button>
                             {{ form_end(form) }}
                         </div>
                     </main>

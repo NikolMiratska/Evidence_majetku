@@ -2,61 +2,90 @@
 
 namespace App\Controller;
 
+use App\Entity\AssetsManager;
+use App\Form\AssetFormType;
+use App\Repository\AssetsManagerRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use function Symfony\Component\String\u;
 
 class AssetController extends AbstractController
 {
+    private $em;
+    private $assetsManagerRepository;
+    private $userRepository;
+    public function __construct(AssetsManagerRepository $assetsManagerRepository, EntityManagerInterface $em, UserRepository $userRepository)
+    {
+        $this->assetsManagerRepository = $assetsManagerRepository;
+        $this->em = $em;
+        $this->userRepository = $userRepository;
+    }
     #[Route('/')]
     public function homepage(): Response
     {
-//        return new Response('List of assets will be here');
-
-        $assets = [
-            ['asset' => 'table', 'id' => '1234', 'status' => 'K likvidaci', 'price' => '4999', 'quantity' => '4'],
-            ['asset' => 'chair', 'id' => '1221', 'status' => 'Pouřívané', 'price' => '1999', 'quantity' => '10'],
-            ['asset' => 'headphones', 'id' => '121121', 'status' => 'Nepoužívané', 'price' => '1499', 'quantity' => '15'],
-
-        ];
+        $assets = $this->assetsManagerRepository->findAll();
 
         return $this->render('Assets/homepage.html.twig',
             [
-//                'title' => 'List of All Assets',
                 'assets' => $assets,
             ]);
     }
 
-    #[Route('/create/{slug}')]
-    public function create($slug = null): Response
+    #[Route('/create', name: 'create_asset')]
+    public function create(Request $request): Response
     {
-        if($slug) {
-            $title = u(str_replace('-', ' ', $slug))->title(true);
-        } else {
-            $title = 'Add New Asset';
-        }
-//        return new Response('New Assests will be added through here - '. $title);
-        return $this->render('Assets/create.html.twig',
-        [
+        $asset =  new AssetsManager();
+        $form = $this->createForm(AssetFormType::class, $asset);
 
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $newAsset = $form->getData();
+
+            $documentPath = $form->get('documentPath')->getData();
+            if($documentPath){
+                $newFileName = uniqid() . '.' . $documentPath->guessExtension();
+
+                try {
+                    $documentPath->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+                        $newFileName
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $newAsset->setDocumentPath('/uploads/' . $newFileName);
+            }
+
+            $this->em->persist($newAsset);
+            $this->em->flush();
+
+            return $this->redirectToRoute('list');
+        }
+
+        return $this->render('Assets/create.html.twig', [
+            'form' => $form->createView()
         ]);
+
     }
 
-    #[Route('/list/{slug}')]
-    public function assetList($slug = null): Response
+    #[Route('/list', name: 'list')]
+    public function assetList(): Response
     {
-        if($slug) {
-            $title = u(str_replace('-', ' ', $slug))->title(true);
-        } else {
-            $title = 'Add New Asset';
-        }
-        $assets = [
-            ['asset' => 'table', 'id' => '1234', 'status' => 'K likvidaci', 'price' => '4999', 'quantity' => '4'],
-            ['asset' => 'chair', 'id' => '1221', 'status' => 'Pouřívané', 'price' => '1999', 'quantity' => '10'],
-            ['asset' => 'headphones', 'id' => '121121', 'status' => 'Nepoužívané', 'price' => '1499', 'quantity' => '15'],
+        $assets = $this->assetsManagerRepository->findAll();
 
-        ];
+
+//        $assets = [
+//            ['asset' => 'table', 'id' => '1234', 'status' => 'K likvidaci', 'price' => '4999', 'quantity' => '4'],
+//            ['asset' => 'chair', 'id' => '1221', 'status' => 'Pouřívané', 'price' => '1999', 'quantity' => '10'],
+//            ['asset' => 'headphones', 'id' => '121121', 'status' => 'Nepoužívané', 'price' => '1499', 'quantity' => '15'],
+//
+//        ];
 //        return new Response('List of Assets here - '. $title);
         return $this->render('Assets/asssetList.html.twig',
             [
@@ -64,18 +93,86 @@ class AssetController extends AbstractController
             ]);
     }
 
-    #[Route('/users/{slug}')]
-    public function usersList($slug = null): Response
+    #[Route('/edit/{id}', name: 'edit_asset')]
+    public function edit($id, Request $request): Response
     {
-        if($slug) {
-            $title = u(str_replace('-', ' ', $slug))->title(true);
-        } else {
-            $title = 'Add New Asset';
+        $assets = $this->assetsManagerRepository->find($id);
+        $form = $this->createForm(AssetFormType::class, $assets);
+
+        $form->handleRequest($request);
+        $documentPath = $form->get('documentPath')->getData();
+
+        if ($form->isSubmitted() && $form->isValid()){
+            if ($documentPath){
+                if ($assets->getDocumentPath() !== null) {
+                    if (file_exists(
+                        $this->getParameter('kernel.project_dir') . $assets->getDocumentPath()
+                    )) {
+                        $this->getParameter('kernel.project_dir') . $assets->getDocumentPath();
+
+                        $newFileName = uniqid() . '.' . $documentPath->guessExtension();
+
+                        try {
+                            $documentPath->move(
+                                $this->getParameter('kernel.project_dir') . '/public/uploads',
+                                $newFileName
+                            );
+                        } catch (FileException $e) {
+                            return new Response($e->getMessage());
+                        }
+
+                        $assets->setDocumentPath('/uploads/' . $newFileName);
+                        $this->em->flush();
+                        return $this->redirectToRoute('list');
+                    }
+                }
+            } else {
+                $assets->setName($form->get('name')->getData());
+                $assets->setInventoryNumber($form->get('inventoryNumber')->getData());
+                $assets->setDescription($form->get('description')->getData());
+                $assets->setUnitPrice($form->get('unitPrice')->getData());
+                $assets->setSupplier($form->get('supplier')->getData());
+                $assets->setManufacturer($form->get('manufacturer')->getData());
+                $assets->setGuaranteePeriod($form->get('guaranteePeriod')->getData());
+                $assets->setAssetType($form->get('assetType')->getData());
+                $assets->setSubsumptionDate($form->get('subsumptionDate')->getData());
+                $assets->setEliminationDate($form->get('eliminationDate')->getData());
+                $assets->setAssetLocation($form->get('assetLocation')->getData());
+                $assets->setAssignedPerson($form->get('assignedPerson')->getData());
+                $assets->setManufacturingNumber($form->get('manufacturingNumber')->getData());
+                $assets->setDateCreated($form->get('dateCreated')->getData());
+                $assets->setNote($form->get('note')->getData());
+//                $assets->setDocumentPath($form->get('documentPath')->getData());
+
+                $this->em->flush();
+                return $this->redirectToRoute('list');
+            }
         }
-//        return new Response('List of Users here - '. $title);
+
+
+        return $this->render('Assets/edit.html.twig', [
+           'assets' => $assets,
+           'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/delete/{id}', methods: ['GET', 'DELETE'], name: 'delete_asset')]
+    public function delete($id){
+        $assets = $this->assetsManagerRepository->find($id);
+        $this->em->remove($assets);
+        $this->em->flush();
+
+        return $this->redirectToRoute('list');
+    }
+
+    #[Route('/users')]
+    public function usersList(): Response
+    {
+        $users = $this->userRepository->findAll();
+
         return $this->render('Assets/usersList.html.twig',
             [
-
+                'users' => $users,
             ]);
     }
 

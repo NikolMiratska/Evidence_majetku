@@ -59,6 +59,9 @@ class AssetsManager
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $note = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $documentPath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -240,6 +243,18 @@ class AssetsManager
     public function setNote(?string $note): static
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getDocumentPath(): ?string
+    {
+        return $this->documentPath;
+    }
+
+    public function setDocumentPath(?string $documentPath): static
+    {
+        $this->documentPath = $documentPath;
 
         return $this;
     }

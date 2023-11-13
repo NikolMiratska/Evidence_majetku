@@ -177,6 +177,24 @@
                             />
                         </div>
                     </div>
+                    <ul class="flex items-center flex-shrink-0 space-x-6">
+                        <!-- Profile menu -->
+                        <li class="relative">
+                            <p
+                                    class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                            >
+                                {{ app.user ? app.user.email  }}
+                            </p>
+                        </li>
+                        <li class="relative">
+                            <a
+                                    class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                                    href="/{{ app.user ? 'logout' : 'login' }}"
+                                    @click="isOpen = false">
+                                {{ app.user ? 'Logout' : 'Login' }}
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </header>
             <main class="h-full overflow-y-auto">
@@ -186,17 +204,21 @@
                     <!-- New Table -->
                     <div class="w-full overflow-hidden rounded-lg shadow-xs">
                         <div class="w-full overflow-x-auto">
+                            <h2
+                                    class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
+                            >
+                                Přehled uživatelů | Počet zadaných uživatelů: {{ users|length }}
+                            </h2>
                             <table class="w-full whitespace-no-wrap">
                                 <thead>
                                 <tr
                                         class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
                                 >
-                                    <th class="px-4 py-3">Název</th>
-                                    <th class="px-4 py-3">Inventární číslo</th>
-                                    <th class="px-4 py-3">Status</th>
-                                    <th class="px-4 py-3">Cena</th>
+                                    <th class="px-4 py-3">Jméno</th>
+                                    <th class="px-4 py-3">Email</th>
+                                    <th class="px-4 py-3">Možnosti</th>
                                 </tr>
-                                </thead>
+                                </thead>{% for user in users %}
                                 <tbody
                                         class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800"
                                 >
@@ -206,29 +228,42 @@
                                             <!-- Avatar with inset shadow -->
 
                                             <div>
-                                                <p class="font-semibold"></p>
+                                                <p class="font-semibold">-</p>
                                                 <p class="text-xs text-gray-600 dark:text-gray-400">
-
+                                                    - přiřazených předmětů
                                                 </p>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-sm">
-
-                                    </td>
-                                    <td class="px-4 py-3 text-xs">
-                        <span
-                                class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"
-                        >
-
-                        </span>
+                                        {{ user.email }}
                                     </td>
                                     <td class="px-4 py-3 text-sm">
-
+                                        <a href="/delete">
+                                            <button
+                                                    class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                                                    aria-label="Delete"
+                                            >
+                                                <svg
+                                                        class="w-5 h-5"
+                                                        aria-hidden="true"
+                                                        fill="none"
+                                                        viewBox="0 0 20 20"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        stroke="currentColor"
+                                                >
+                                                    <path
+                                                            d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                                    ></path>
+                                                </svg>
+                                            </button>
+                                        </a>
                                     </td>
                                 </tr>
                                 </tbody>
-
+                                {% endfor %}
                             </table>
                         </div>
                         <div

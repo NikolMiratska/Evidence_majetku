@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AssetsManagerRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AssetsManagerRepository::class)]
 class AssetsManager
@@ -15,6 +16,7 @@ class AssetsManager
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
@@ -61,6 +63,33 @@ class AssetsManager
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $documentPath = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateBought = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateReceived = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $eliminated = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $owner = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $category = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $workplace = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $complaint = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $nextServiceDue = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $serviceInterval = null;
 
     public function getId(): ?int
     {
@@ -258,4 +287,112 @@ class AssetsManager
 
         return $this;
     }
-}
+
+    public function getDateBought(): ?\DateTimeInterface
+    {
+        return $this->dateBought;
+    }
+
+    public function setDateBought(?\DateTimeInterface $dateBought): static
+    {
+        $this->dateBought = $dateBought;
+
+        return $this;
+    }
+
+    public function getDateReceived(): ?\DateTimeInterface
+    {
+        return $this->dateReceived;
+    }
+
+    public function setDateReceived(?\DateTimeInterface $dateReceived): static
+    {
+        $this->dateReceived = $dateReceived;
+
+        return $this;
+    }
+
+    public function isEliminated(): ?bool
+    {
+        return $this->eliminated;
+    }
+
+    public function setEliminated(?bool $eliminated): static
+    {
+        $this->eliminated = $eliminated;
+
+        return $this;
+    }
+
+    public function getOwner(): ?string
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?string $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    public function getWorkplace(): ?string
+    {
+        return $this->workplace;
+    }
+
+    public function setWorkplace(?string $workplace): static
+    {
+        $this->workplace = $workplace;
+
+        return $this;
+    }
+
+    public function getComplaint(): ?string
+    {
+        return $this->complaint;
+    }
+
+    public function setComplaint(?string $complaint): static
+    {
+        $this->complaint = $complaint;
+
+        return $this;
+    }
+
+    public function getNextServiceDue(): ?\DateTimeInterface
+    {
+        return $this->nextServiceDue;
+    }
+
+    public function setNextServiceDue(?\DateTimeInterface $nextServiceDue): static
+    {
+        $this->nextServiceDue = $nextServiceDue;
+
+        return $this;
+    }
+
+    public function getServiceInterval(): ?string
+    {
+        return $this->serviceInterval;
+    }
+
+    public function setServiceInterval(?string $serviceInterval): static
+    {
+        $this->serviceInterval = $serviceInterval;
+
+        return $this;
+    }
+    }

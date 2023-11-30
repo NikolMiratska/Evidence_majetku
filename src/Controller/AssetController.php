@@ -7,6 +7,7 @@ use App\Form\AssetFormType;
 use App\Repository\AssetsManagerRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,13 +27,23 @@ class AssetController extends AbstractController
         $this->userRepository = $userRepository;
     }
     #[Route('/')]
-    public function homepage(): Response
+    public function homepage(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
-        $assets = $this->assetsManagerRepository->findAll();
+        $users = $this->userRepository->findAll();
+
+        $dql   = "SELECT a FROM App\Entity\AssetsManager a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
 
         return $this->render('Assets/homepage.html.twig',
             [
-                'assets' => $assets,
+                'users' => $users,
+                'assets' => $pagination,
             ]);
     }
 
@@ -75,21 +86,31 @@ class AssetController extends AbstractController
     }
 
     #[Route('/list', name: 'list')]
-    public function assetList(): Response
+    public function assetList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
-        $assets = $this->assetsManagerRepository->findAll();
+        $dql   = "SELECT a FROM App\Entity\AssetsManager a";
+        $query = $em->createQuery($dql);
 
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
 
-//        $assets = [
-//            ['asset' => 'table', 'id' => '1234', 'status' => 'K likvidaci', 'price' => '4999', 'quantity' => '4'],
-//            ['asset' => 'chair', 'id' => '1221', 'status' => 'Pouřívané', 'price' => '1999', 'quantity' => '10'],
-//            ['asset' => 'headphones', 'id' => '121121', 'status' => 'Nepoužívané', 'price' => '1499', 'quantity' => '15'],
-//
-//        ];
-//        return new Response('List of Assets here - '. $title);
         return $this->render('Assets/asssetList.html.twig',
             [
-                'assets' => $assets,
+                'assets' => $pagination
+            ]);
+    }
+
+    #[Route('/details/{id}', name: 'detail_asset')]
+    public function assetDetail($id, Request $request): Response
+    {
+        $assets = $this->assetsManagerRepository->find($id);
+
+        return $this->render('Assets/details.html.twig',
+            [
+                'assets' => $assets
             ]);
     }
 
@@ -149,7 +170,6 @@ class AssetController extends AbstractController
             }
         }
 
-
         return $this->render('Assets/edit.html.twig', [
            'assets' => $assets,
            'form' => $form->createView()
@@ -172,7 +192,7 @@ class AssetController extends AbstractController
 
         return $this->render('Assets/usersList.html.twig',
             [
-                'users' => $users,
+                'users' => $users
             ]);
     }
 

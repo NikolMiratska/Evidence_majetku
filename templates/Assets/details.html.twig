@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New majetku{% endblock %}
+{% block title %}Detaily majetku{% endblock %}
 
 {% block body %}
     <div
@@ -99,6 +99,7 @@
                             <span class="ml-4">Uživatelé</span>
                         </a>
                     </li>
+                </ul>
             </div>
         </aside>
 
@@ -163,16 +164,98 @@
                             <h2
                                     class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200"
                             >
-                                Nový majetek
+                                Detaily majetku {{ assets.name }}
                             </h2>
-                            {{ form_start(form) }}
-                            {{ form_widget(form) }}
-                            <br>
-                            <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                            >Přidat majetek</button>
-                            {{ form_end(form) }}
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Název:</b> {{ assets.name }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Inventární číslo:</b> {{ assets.inventoryNumber }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Cena:</b> {{ assets.unitPrice }} CZK
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Záruka v letech:</b> {{ assets.guaranteePeriod }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Typ:</b> {{ assets.assetType }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Umístění:</b> {{ assets.assetLocation }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Přiřazeno:</b> {{ assets.assignedPerson }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Popis:</b> {{ assets.description }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Status vyřazení:</b> {{ assets.eliminated }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Kategorie:</b> {{ assets.category }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Pracoviště:</b> {{ assets.workplace }}
+                                </p>
+                            </div>
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Vlastník:</b> {{ assets.owner }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Dodavatel:</b> {{ assets.supplier }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Výrobce:</b> {{ assets.manufacturer }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Výrobní číslo:</b> {{ assets.manufacturingNumber }}
+                                </p>
+                            </div>
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+{#                                TODO date to string#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Datum vytvoření:</b> {{ assets.dateCreated }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400" id="demo">#}
+{#                                    <b>Datum zařazení:</b> {{ assets.subsumptionDate }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Datum vyřazení:</b> {{ assets.eliminationDate }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Datum zakoupení:</b> {{ assets.dateBought }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Datum obdržení:</b> {{ assets.dateReceived }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Příští servis:</b> {{ assets.nextServiceDue }}#}
+{#                                </p>#}
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b>Servisní interval:</b> {{ assets.serviceInterval }}#}
+{#                                </p>#}
+                            </div>
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Poznámka:</b> {{ assets.note }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Reklamace:</b> {{ assets.complaint }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b>Nahrané dokumenty:</b> {{ assets.documentPath }}
+                                </p>
+                            </div>
                         </div>
                     </main>
                 </div>
             </main>
+        </div>
+    </div>
 {% endblock %}
+
+

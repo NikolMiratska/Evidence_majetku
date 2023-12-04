@@ -94,7 +94,7 @@ class AssetController extends AbstractController
         $pagination = $paginator->paginate(
             $query,
             $request->query->getInt('page', 1), /*page number*/
-            10 /*limit per page*/
+            50 /*limit per page*/
         );
 
         return $this->render('Assets/asssetList.html.twig',

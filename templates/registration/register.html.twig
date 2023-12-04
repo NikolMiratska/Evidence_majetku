@@ -11,6 +11,7 @@
                         Registrace
                     </h1>
                 </div>
+
                 <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                     <div class="w-full">
                         <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
@@ -27,11 +28,9 @@
                         >Registrovat</button>
                         {{ form_end(registrationForm) }}
                         <hr class="my-8" />
+
                         <p class="mt-4">
-                            <a
-                                    class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                                    href="/login"
-                            >
+                            <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline" href="/login">
                                 Již máte účet? Přihlásit se
                             </a>
                         </p>
@@ -41,4 +40,3 @@
         </div>
     </div>
 {% endblock %}
-

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\AssetsManager;
+use App\Entity\User;
 use App\Form\AssetFormType;
 use App\Form\EditUserFormType;
 use App\Repository\AssetsManagerRepository;
@@ -10,9 +11,11 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use function Symfony\Component\String\u;
 
@@ -57,7 +60,7 @@ class AssetController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
             $newAsset = $form->getData();
-//            $newOwner = $form->getData();
+            $newOwner = $form->getData();
 
             $documentPath = $form->get('documentPath')->getData();
             if($documentPath){
@@ -75,23 +78,23 @@ class AssetController extends AbstractController
                 $newAsset->setDocumentPath('/uploads/' . $newFileName);
             }
 
-//            if ($asset->getOwnedBy() !== null){
-//                $selectedOwner = $asset->getOwnedBy();
-//            } else {
-//                $newOwnerName = $form->get('newOwner')->getData();
+            if ($asset->getOwnedBy() !== null){
+                $selectedOwner = $asset->getOwnedBy();
+            } else {
+                $newOwnerName = $form->get('newOwner')->getData();
+
+                $newOwner = new User();
+                $newOwner->setName($newOwnerName);
 //
-//                $newOwner = new AssetsManager();
-//                $newOwner->setName($newOwnerName);
-////
-////                $this->em->persist($newOwner);
-////                $this->em->flush();
-//
-//                $selectedOwner = $newOwner;
-//            }
+//                $this->em->persist($newOwner);
+//                $this->em->flush();
+
+                $selectedOwner = $newOwner;
+            }
 
 //            $this->em->persist($newAsset->getOwnedBy());
             $this->em->persist($newAsset);
-//            $this->em->persist($newOwner);
+            $this->em->persist($newOwner);
             $this->em->flush();
 
             return $this->redirectToRoute('list');
@@ -187,7 +190,7 @@ class AssetController extends AbstractController
                 $assets->setSubsumptionDate($form->get('subsumptionDate')->getData());
                 $assets->setEliminationDate($form->get('eliminationDate')->getData());
                 $assets->setAssetLocation($form->get('assetLocation')->getData());
-                $assets->setAssignedPerson($form->get('assignedPerson')->getData());
+                $assets->setAssignedPerson($form->get('newOwner')->getData());
                 $assets->setManufacturingNumber($form->get('manufacturingNumber')->getData());
                 $assets->setDateCreated($form->get('dateCreated')->getData());
                 $assets->setNote($form->get('note')->getData());
@@ -225,12 +228,6 @@ class AssetController extends AbstractController
     #[Route('/users', name: 'user')]
     public function usersList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
-//        $users = $this->userRepository->findAll();
-//
-//        return $this->render('Assets/usersList.html.twig',
-//            [
-//                'users' => $users
-//            ]);
         $dql   = "SELECT a FROM App\Entity\User a";
         $query = $em->createQuery($dql);
 
@@ -270,4 +267,22 @@ class AssetController extends AbstractController
         ]);
     }
 
+    #[Route('/uploads/{documentPath}', name: 'download_file', requirements: ['documentPath' => '.+'])]
+    public function downloadFileAction($documentPath): BinaryFileResponse
+    {
+        $documentPath = $this->getParameter('kernel.project_dir') . '/public/' . $documentPath;
+
+        if (!file_exists($documentPath)) {
+            throw $this->createNotFoundException('The file does not exist');
+        }
+
+        $response = new BinaryFileResponse($documentPath);
+        $originalFileName = pathinfo($documentPath, PATHINFO_FILENAME);
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $originalFileName . '.' . pathinfo($documentPath, PATHINFO_EXTENSION)
+        );
+
+        return $response;
+    }
 }

@@ -25,7 +25,7 @@ class AssetsManager
     /**
      * @ORM\Column(type="string", unique=true)
      */
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,  unique: true, nullable: true)]
     private ?string $inventoryNumber = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -445,5 +445,26 @@ class AssetsManager
         $this->ownedBy = $ownedBy;
 
         return $this;
+    }
+    public function getStringRepresentation1(): string
+    {
+        return (string) $this->getAssetType();
+    }
+    //.' '.$this->getAssetLocation().' '.$this->getWorkplace().' '.$this->getOwner().' '.$this->getCategory()
+    public function getStringRepresentation2(): string
+    {
+        return (string) $this->getWorkplace();
+    }
+    public function __toString3(): string
+    {
+        return (string)$this->getAssetLocation();
+    }
+    public function __toString4(): string
+    {
+        return (string) $this->getOwner();
+    }
+    public function __toString()
+    {
+        return (string) $this->getAssetType().' '.$this->getAssetLocation().' '.$this->getWorkplace().' '.$this->getOwner().' '.$this->getCategory();
     }
     }

@@ -132,7 +132,7 @@
                                     <b class="text-purple-400">Záruka v letech:</b> {{ assets.guaranteePeriod }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Typ:</b> {{ assets.assetType }}
+                                    <b class="text-purple-400">Typ:</b> {{ assets.getStringRepresentation1() }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Umístění:</b> {{ assets.assetLocation }}
@@ -150,7 +150,7 @@
                                     <b class="text-purple-400">Kategorie:</b> {{ assets.category }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Pracoviště:</b> {{ assets.workplace }}
+                                    <b class="text-purple-400">Pracoviště:</b> {{ assets.getStringRepresentation2() }}
                                 </p>
                             </div>
 
@@ -209,7 +209,7 @@
                                     <b class="text-purple-400">Reklamace:</b> {{ assets.complaint }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Nahrané dokumenty:</b> {{ assets.documentPath }}
+                                    <b class="text-purple-400">Nahrané dokumenty:</b> <a href="{{ path('download_file', {'documentPath': assets.documentPath}) }}">{{ assets.documentPath }}</a>
                                 </p>
                             </div>
                         </div>

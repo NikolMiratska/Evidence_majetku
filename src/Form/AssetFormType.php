@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class AssetFormType extends AbstractType
 {
@@ -37,6 +38,9 @@ class AssetFormType extends AbstractType
                 ),
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'label' => 'Inventární číslo *',
+                'constraints' => [
+                    new NotBlank(['message' => 'Inventory number cannot be blank.']),
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'attr' => array(
@@ -99,9 +103,9 @@ class AssetFormType extends AbstractType
                 'label' => 'Záruční doba (roky) *',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
             ])
-            ->add('assetType', TextType::class, [
-//                'class' => 'App\Entity\AssetsManager',
-//                'choice_label' => 'assetType',
+            ->add('assetType', EntityType::class, [
+                'class' => AssetsManager::class,
+                'choice_label' => fn(AssetsManager $u) => $u->getAssetType(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Druh',
@@ -110,7 +114,9 @@ class AssetFormType extends AbstractType
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'required' => false,
             ])
-            ->add('assetLocation', TextType::class, [
+            ->add('assetLocation', EntityType::class, [
+                'class' => AssetsManager::class,
+                'choice_label' => fn(AssetsManager $u) => $u->getAssetLocation(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Umístění',
@@ -121,7 +127,7 @@ class AssetFormType extends AbstractType
             ])
             ->add('ownedBy', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => fn(User $u) => $u->getEmail(),
+                'choice_label' => fn(User $u) => $u->getName(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Přizeno (člověku)',
@@ -166,7 +172,9 @@ class AssetFormType extends AbstractType
                     'Ne' => false,
                 ],
             ])
-            ->add('owner', TextType::class, [
+            ->add('owner', EntityType::class, [
+                'class' => AssetsManager::class,
+                'choice_label' => fn(AssetsManager $u) => $u->getOwner(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Vlastník',
@@ -175,7 +183,9 @@ class AssetFormType extends AbstractType
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'required' => false,
             ])
-            ->add('category', TextType::class, [
+            ->add('category', EntityType::class, [
+                'class' => AssetsManager::class,
+                'choice_label' => fn(AssetsManager $u) => $u->getCategory(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Kategorie (motorový, elektrický,..)',
@@ -184,7 +194,9 @@ class AssetFormType extends AbstractType
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'required' => false,
             ])
-            ->add('workplace', TextType::class, [
+            ->add('workplace', EntityType::class, [
+                'class' => AssetsManager::class,
+                'choice_label' => fn(AssetsManager $u) => $u->getWorkplace(),
                 'attr' => array(
                     'class' => 'block mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'placeholder' => 'Pracoviště',

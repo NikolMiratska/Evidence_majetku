@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit majetku{% endblock %}
+{% block title %}Detaily majetku{% endblock %}
 
 {% block body %}
     <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen }">
@@ -87,41 +87,51 @@
                 </div>
             </header>
 
-{#            <main class="h-full overflow-y-auto">#}
-{#                <div class="container px-6 mx-auto grid">#}
-{#                    <br><br>#}
-{#                    <main class="h-full overflow-y-auto">#}
-{#                        <div class="container px-6 mx-auto grid">#}
-{#                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">#}
-{#                                Editovat majetek#}
-{#                            </h2>#}
-{#                            {{ form_start(form) }}#}
-{#                            {{ form_widget(form) }}#}
-{#                            <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"#}
-{#                            >Uložit úpravy</button>#}
-{#                            {{ form_end(form) }}#}
-{#                        </div>#}
-{#                    </main>#}
-{#                </div>#}
-{#            </main>#}
-
-
+            <main class="h-full overflow-y-auto">
+                <div class="container px-6 mx-auto grid">
                     <br><br>
                     <main class="h-full overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                                Editovat majetek {{ assets.name }}
+                                Detaily uživatele {{ users.email }}
+                                <hr class="my-2 border-purple-400" />
+
+                                <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
+                                    <div class="inline-flex items-center">
+                                        <a href="/editUser/{{ users.id }}">
+                                            <button class="mr-2 items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Edit">
+                                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                                </svg>
+                                            </button>
+                                        </a>
+
+                                       <a href="/deleteUser/{{ users.id }}">
+                                            <button class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">
+                                                <svg class="w-5 h-5" aria-hidden="true" fill="none" viewBox="0 0 20 20" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor">
+                                                    <path d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                                    ></path>
+                                                </svg>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </span>
                             </h2>
-                            <hr class="my-2 border-purple-400" />
 
-                            {{ form_start(form) }}<div class="grid gap-6 mb-8 md:grid-cols-2">
-                            {{ form_widget(form) }}</div>
-                            <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                            >Uložit úpravy</button>
-                            {{ form_end(form) }}
-
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Jméno:</b> {{ users.name }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Email:</b> {{ users.email }}
+                                </p>
+                            </div>
                         </div>
                     </main>
+                </div>
+            </main>
         </div>
     </div>
 {% endblock %}
+
+

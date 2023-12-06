@@ -6,7 +6,10 @@ use App\Repository\AssetsManagerRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+/**
+ * @ORM\Entity
+ * @invenotyNumber(fields={"uniqueField"}, message="This value is already in use.")
+ */
 #[ORM\Entity(repositoryClass: AssetsManagerRepository::class)]
 class AssetsManager
 {
@@ -19,6 +22,9 @@ class AssetsManager
     #[Assert\NotBlank]
     private ?string $name = null;
 
+    /**
+     * @ORM\Column(type="string", unique=true)
+     */
     #[ORM\Column(length: 255)]
     private ?string $inventoryNumber = null;
 
@@ -90,6 +96,15 @@ class AssetsManager
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $serviceInterval = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $orderNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $orderURL = null;
+
+    #[ORM\ManyToOne(inversedBy: 'isOwnedBy')]
+    private ?User $ownedBy = null;
 
     public function getId(): ?int
     {
@@ -392,6 +407,42 @@ class AssetsManager
     public function setServiceInterval(?string $serviceInterval): static
     {
         $this->serviceInterval = $serviceInterval;
+
+        return $this;
+    }
+
+    public function getOrderNumber(): ?int
+    {
+        return $this->orderNumber;
+    }
+
+    public function setOrderNumber(?int $orderNumber): static
+    {
+        $this->orderNumber = $orderNumber;
+
+        return $this;
+    }
+
+    public function getOrderURL(): ?string
+    {
+        return $this->orderURL;
+    }
+
+    public function setOrderURL(?string $orderURL): static
+    {
+        $this->orderURL = $orderURL;
+
+        return $this;
+    }
+
+    public function getOwnedBy(): ?User
+    {
+        return $this->ownedBy;
+    }
+
+    public function setOwnedBy(?User $ownedBy): static
+    {
+        $this->ownedBy = $ownedBy;
 
         return $this;
     }

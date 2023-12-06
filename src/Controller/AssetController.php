@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\AssetsManager;
 use App\Form\AssetFormType;
+use App\Form\EditUserFormType;
 use App\Repository\AssetsManagerRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -56,6 +57,7 @@ class AssetController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
             $newAsset = $form->getData();
+//            $newOwner = $form->getData();
 
             $documentPath = $form->get('documentPath')->getData();
             if($documentPath){
@@ -73,7 +75,23 @@ class AssetController extends AbstractController
                 $newAsset->setDocumentPath('/uploads/' . $newFileName);
             }
 
+//            if ($asset->getOwnedBy() !== null){
+//                $selectedOwner = $asset->getOwnedBy();
+//            } else {
+//                $newOwnerName = $form->get('newOwner')->getData();
+//
+//                $newOwner = new AssetsManager();
+//                $newOwner->setName($newOwnerName);
+////
+////                $this->em->persist($newOwner);
+////                $this->em->flush();
+//
+//                $selectedOwner = $newOwner;
+//            }
+
+//            $this->em->persist($newAsset->getOwnedBy());
             $this->em->persist($newAsset);
+//            $this->em->persist($newOwner);
             $this->em->flush();
 
             return $this->redirectToRoute('list');
@@ -111,6 +129,16 @@ class AssetController extends AbstractController
         return $this->render('Assets/details.html.twig',
             [
                 'assets' => $assets
+            ]);
+    }
+    #[Route('/userDetails/{id}', name: 'detail_user')]
+    public function userDetail($id, Request $request): Response
+    {
+        $users = $this->userRepository->find($id);
+
+        return $this->render('Assets/userDetails.html.twig',
+            [
+                'users' => $users
             ]);
     }
 
@@ -185,15 +213,61 @@ class AssetController extends AbstractController
         return $this->redirectToRoute('list');
     }
 
-    #[Route('/users')]
-    public function usersList(): Response
+    #[Route('/deleteUser/{id}', methods: ['GET', 'DELETE'], name: 'delete_user')]
+    public function deleteUser($id){
+        $users = $this->userRepository->find($id);
+        $this->em->remove($users);
+        $this->em->flush();
+
+        return $this->redirectToRoute('user');
+    }
+
+    #[Route('/users', name: 'user')]
+    public function usersList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
-        $users = $this->userRepository->findAll();
+//        $users = $this->userRepository->findAll();
+//
+//        return $this->render('Assets/usersList.html.twig',
+//            [
+//                'users' => $users
+//            ]);
+        $dql   = "SELECT a FROM App\Entity\User a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            50 /*limit per page*/
+        );
 
         return $this->render('Assets/usersList.html.twig',
             [
-                'users' => $users
+                'users' => $pagination
             ]);
+    }
+
+    #[Route('/editUser/{id}', name: 'edit_user')]
+    public function editUser($id, Request $request): Response
+    {
+        $users = $this->userRepository->find($id);
+        $form = $this->createForm(EditUserFormType::class, $users);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+
+                $users->setName($form->get('name')->getData());
+                $users->setEmail($form->get('email')->getData());
+
+
+                $this->em->flush();
+                return $this->redirectToRoute('user');
+            }
+
+        return $this->render('Assets/editUser.html.twig', [
+            'users' => $users,
+            'form' => $form->createView()
+        ]);
     }
 
 }

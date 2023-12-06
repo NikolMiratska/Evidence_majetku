@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -29,6 +31,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $name = null;
+
+    #[ORM\OneToMany(mappedBy: 'ownedBy', targetEntity: AssetsManager::class)]
+    private Collection $isOwnedBy;
+
+    public function __construct()
+    {
+        $this->isOwnedBy = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -98,5 +111,51 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(?string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AssetsManager>
+     */
+    public function getIsOwnedBy(): Collection
+    {
+        return $this->isOwnedBy;
+    }
+
+    public function addIsOwnedBy(AssetsManager $isOwnedBy): static
+    {
+        if (!$this->isOwnedBy->contains($isOwnedBy)) {
+            $this->isOwnedBy->add($isOwnedBy);
+            $isOwnedBy->setOwnedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIsOwnedBy(AssetsManager $isOwnedBy): static
+    {
+        if ($this->isOwnedBy->removeElement($isOwnedBy)) {
+            // set the owning side to null (unless already changed)
+            if ($isOwnedBy->getOwnedBy() === $this) {
+                $isOwnedBy->setOwnedBy(null);
+            }
+        }
+
+        return $this;
+    }
+    public function __toString()
+    {
+        return (string) $this->getEmail();
     }
 }

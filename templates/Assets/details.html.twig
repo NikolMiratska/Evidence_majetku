@@ -94,12 +94,12 @@
                         <div class="container px-6 mx-auto grid">
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 Detaily majetku {{ assets.name }}
-                                <hr class="my-8" />
+                                <hr class="my-2 border-purple-400" />
 
                                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                                     <div class="inline-flex items-center">
                                         <a href="/edit/{{ assets.id }}">
-                                            <button class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Edit">
+                                            <button class="mr-2 items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Edit">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
                                                 </svg>
@@ -118,58 +118,65 @@
                                 </span>
                             </h2>
 
-                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Název:</b> {{ assets.name }}
+                                    <b class="text-purple-400">Název:</b> {{ assets.name }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Inventární číslo:</b> {{ assets.inventoryNumber }}
+                                    <b class="text-purple-400">Inventární číslo:</b> {{ assets.inventoryNumber }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Cena:</b> {{ assets.unitPrice }} CZK
+                                    <b class="text-purple-400">Cena:</b> {{ assets.unitPrice }} CZK
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Záruka v letech:</b> {{ assets.guaranteePeriod }}
+                                    <b class="text-purple-400">Záruka v letech:</b> {{ assets.guaranteePeriod }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Typ:</b> {{ assets.assetType }}
+                                    <b class="text-purple-400">Typ:</b> {{ assets.assetType }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Umístění:</b> {{ assets.assetLocation }}
+                                    <b class="text-purple-400">Umístění:</b> {{ assets.assetLocation }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Přiřazeno:</b> {{ assets.assignedPerson }}
+                                    <b class="text-purple-400">Přiřazeno:</b> {{ assets.ownedBy }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Popis:</b> {{ assets.description }}
+                                    <b class="text-purple-400">Popis:</b> {{ assets.description }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Status vyřazení:</b> {{ assets.eliminated }}
+                                    <b class="text-purple-400">Status vyřazení:</b> {{ assets.eliminated }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Kategorie:</b> {{ assets.category }}
+                                    <b class="text-purple-400">Kategorie:</b> {{ assets.category }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Pracoviště:</b> {{ assets.workplace }}
-                                </p>
-                            </div>
-
-                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
-                                <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Vlastník:</b> {{ assets.owner }}
-                                </p>
-                                <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Dodavatel:</b> {{ assets.supplier }}
-                                </p>
-                                <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Výrobce:</b> {{ assets.manufacturer }}
-                                </p>
-                                <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Výrobní číslo:</b> {{ assets.manufacturingNumber }}
+                                    <b class="text-purple-400">Pracoviště:</b> {{ assets.workplace }}
                                 </p>
                             </div>
 
-                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Vlastník:</b> {{ assets.owner }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Dodavatel:</b> {{ assets.supplier }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Výrobce:</b> {{ assets.manufacturer }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Výrobní číslo:</b> {{ assets.manufacturingNumber }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Číslo objednávky:</b> {{ assets.orderNumber }}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">URL objednávky:</b> {{ assets.orderURL }}
+                                </p>
+                            </div>
+
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
+                                <b class="text-red-700">Dates TODO</b>
 {#                                TODO date to string#}
 {#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
 {#                                    <b>Datum vytvoření:</b> {{ assets.dateCreated }}#}
@@ -194,15 +201,15 @@
 {#                                </p>#}
                             </div>
 
-                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Poznámka:</b> {{ assets.note }}
+                                    <b class="text-purple-400">Poznámka:</b> {{ assets.note }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Reklamace:</b> {{ assets.complaint }}
+                                    <b class="text-purple-400">Reklamace:</b> {{ assets.complaint }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b>Nahrané dokumenty:</b> {{ assets.documentPath }}
+                                    <b class="text-purple-400">Nahrané dokumenty:</b> {{ assets.documentPath }}
                                 </p>
                             </div>
                         </div>

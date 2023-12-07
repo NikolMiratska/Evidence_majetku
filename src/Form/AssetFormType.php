@@ -280,6 +280,10 @@ class AssetFormType extends AbstractType
                 'label' => 'Dokumenty',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
             ))
+//            ->add('documentPaths', FileType::class, [
+//                'multiple' => true,
+//                'required' => false,
+//            ]);
         ;
     }
 

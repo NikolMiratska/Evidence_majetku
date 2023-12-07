@@ -106,6 +106,9 @@ class AssetsManager
     #[ORM\ManyToOne(inversedBy: 'isOwnedBy')]
     private ?User $ownedBy = null;
 
+    #[ORM\Column(type: 'json',nullable: true)]
+    private ?array $documentPaths = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -455,16 +458,28 @@ class AssetsManager
     {
         return (string) $this->getWorkplace();
     }
-    public function __toString3(): string
-    {
-        return (string)$this->getAssetLocation();
-    }
-    public function __toString4(): string
-    {
-        return (string) $this->getOwner();
-    }
+//    public function __toString3(): string
+//    {
+//        return (string)$this->getAssetLocation();
+//    }
+//    public function __toString4(): string
+//    {
+//        return (string) $this->getOwner();
+//    }
     public function __toString()
     {
         return (string) $this->getAssetType().' '.$this->getAssetLocation().' '.$this->getWorkplace().' '.$this->getOwner().' '.$this->getCategory();
+    }
+
+    public function getDocumentPaths(): ?array
+    {
+        return $this->documentPaths;
+    }
+
+    public function setDocumentPaths(?array $documentPaths): self
+    {
+        $this->documentPaths = $documentPaths;
+
+        return $this;
     }
     }

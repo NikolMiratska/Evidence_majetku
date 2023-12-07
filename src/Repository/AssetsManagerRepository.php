@@ -21,6 +21,21 @@ class AssetsManagerRepository extends ServiceEntityRepository
         parent::__construct($registry, AssetsManager::class);
     }
 
+    public function findBySearchQuery(string $query): array
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        if ($query !== null && $query !== '') {
+            $queryBuilder
+                ->andWhere('e.name LIKE :queryName')
+                ->orWhere('e.inventoryNumber LIKE :queryInventoryNumber')
+                ->setParameter('queryName', '%' . $query . '%')
+                ->setParameter('queryInventoryNumber', '%' . $query . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return AssetsManager[] Returns an array of AssetsManager objects
 //     */

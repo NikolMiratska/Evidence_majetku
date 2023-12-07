@@ -13,6 +13,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -79,7 +80,7 @@ class AssetController extends AbstractController
             }
 
             if ($asset->getOwnedBy() !== null){
-                $selectedOwner = $asset->getOwnedBy();
+                $selectedOwner = $asset->getOwnedBy()->getName();
             } else {
                 $newOwnerName = $form->get('newOwner')->getData();
 
@@ -128,6 +129,8 @@ class AssetController extends AbstractController
     public function assetDetail($id, Request $request): Response
     {
         $assets = $this->assetsManagerRepository->find($id);
+        $assets->getStringRepresentation1();
+        $assets->getStringRepresentation2();
 
         return $this->render('Assets/details.html.twig',
             [
@@ -178,6 +181,28 @@ class AssetController extends AbstractController
                         return $this->redirectToRoute('list');
                     }
                 }
+//            if ($documentPath){
+//                $documentPaths = $form->get('documentPaths')->getData();
+//
+//                foreach ($documentPaths as $documentPath) {
+//                    // Handle each uploaded file
+//                    if ($documentPath instanceof UploadedFile) {
+//                        $newFileName = uniqid() . '.' . $documentPath->guessExtension();
+//
+//                        try {
+//                            $documentPath->move(
+//                                $this->getParameter('kernel.project_dir') . '/public/uploads',
+//                                $newFileName
+//                            );
+//                        } catch (FileException $e) {
+//                            return new Response($e->getMessage());
+//                        }
+//
+//                        $assets->setDocumentPath('/uploads/' . $newFileName);
+//                        $this->em->flush();
+//                        return $this->redirectToRoute('list');
+//                    }
+//                }
             } else {
                 $assets->setName($form->get('name')->getData());
                 $assets->setInventoryNumber($form->get('inventoryNumber')->getData());
@@ -268,21 +293,68 @@ class AssetController extends AbstractController
     }
 
     #[Route('/uploads/{documentPath}', name: 'download_file', requirements: ['documentPath' => '.+'])]
-    public function downloadFileAction($documentPath): BinaryFileResponse
+    public function downloadFileAction($documentPath = null): BinaryFileResponse
     {
-        $documentPath = $this->getParameter('kernel.project_dir') . '/public/' . $documentPath;
+        if ($documentPath) {
+            $documentPath = $this->getParameter('kernel.project_dir') . '/public/' . $documentPath;
 
-        if (!file_exists($documentPath)) {
-            throw $this->createNotFoundException('The file does not exist');
-        }
+            if (!file_exists($documentPath)) {
+                throw $this->createNotFoundException('The file does not exist');
+            }
 
-        $response = new BinaryFileResponse($documentPath);
-        $originalFileName = pathinfo($documentPath, PATHINFO_FILENAME);
-        $response->setContentDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            $originalFileName . '.' . pathinfo($documentPath, PATHINFO_EXTENSION)
-        );
+            $response = new BinaryFileResponse($documentPath);
+            $originalFileName = pathinfo($documentPath, PATHINFO_FILENAME);
+            $response->setContentDisposition(
+                ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                $originalFileName . '.' . pathinfo($documentPath, PATHINFO_EXTENSION)
+            );
 
         return $response;
+            }
+    }
+
+    #[Route('deleteFile/{id}/{filename}', name: 'deleteFile')]
+    public function deleteFile($id, $filename): Response
+    {
+        $assets = $this->assetsManagerRepository->find($id);
+
+        if (!$assets) {
+            throw $this->createNotFoundException('Asset not found');
+        }
+
+        if (!in_array('/uploads/' . $filename, $assets->getDocumentPaths())) {
+            throw $this->createNotFoundException('File not found');
+        }
+
+        $filePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $filename;
+
+        if (!file_exists($filePath)) {
+            throw $this->createNotFoundException('File not found');
+        }
+
+        try {
+            unlink($filePath);
+        } catch (\Exception $e) {
+            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        // Remove the filename from the entity's documentPaths array
+        $assets->removeDocumentPath('/uploads/' . $filename);
+
+        // Update the entity in the database
+        $this->em->flush();
+
+        return $this->redirectToRoute('edit_asset', ['id' => $id]);
+    }
+
+    #[Route('/search', name: 'search')]
+    public function search(Request $request): Response
+    {
+        $query = $request->query->get('query');
+
+//        $results = $this->getDoctrine()->getRepository(AssetsManager::class)->findBySearchQuery($query);
+        $results = $this->assetsManagerRepository->findBySearchQuery($query);
+
+        return $this->render('Assets/search.html.twig', ['results' => $results]);
     }
 }

@@ -95,10 +95,10 @@
                                 Přehled majetku | Počet zadaného majetku: {{ assets|length }}
                             </h2>
                             <ul id="resultsContainer">
-{#                                {% for result in results %}#}
-{#                                    <li>{{ result.name }}</li>#}
-{#                                    #}{# Add more fields as needed #}
-{#                                {% endfor %}#}
+                                {% for result in results %}
+                                    <li>{{ result.name }}</li>
+                                    {# Add more fields as needed #}
+                                {% endfor %}
                             </ul>
                             <table class="w-full whitespace-no-wrap">
                                 <thead>
@@ -112,40 +112,40 @@
                                 </thead>
 
                                 {% for asset in assets %}
-                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                                <tr class="text-gray-700 dark:text-gray-400">
-                                    <td class="px-4 py-3 text-sm">
-                                        {{ asset.id }}
-                                    </td>
+                                    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                    <tr class="text-gray-700 dark:text-gray-400">
+                                        <td class="px-4 py-3 text-sm">
+                                            {{ asset.id }}
+                                        </td>
 
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center text-sm">
-                                            <div>
-                                                <a href="/details/{{ asset.id }}">
-                                                    <p class="font-semibold hover:underline">{{ asset.name|upper }}</p>
-                                                </a>
-                                                <p class="text-xs text-gray-600 dark:text-gray-400">
-                                                    {{ asset.guaranteePeriod }} let záruka
-                                                </p>
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center text-sm">
+                                                <div>
+                                                    <a href="/details/{{ asset.id }}">
+                                                        <p class="font-semibold hover:underline">{{ asset.name|upper }}</p>
+                                                    </a>
+                                                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                                                        {{ asset.guaranteePeriod }} let záruka
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
 
-                                    <td class="px-4 py-3 text-sm">
-                                        {{ asset.inventoryNumber }}
-                                    </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            {{ asset.inventoryNumber }}
+                                        </td>
 
-                                    <td class="px-4 py-3 text-xs">
+                                        <td class="px-4 py-3 text-xs">
                                         <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
                                             {{ asset.ownedBy }}
                                         </span>
-                                    </td>
+                                        </td>
 
-                                    <td class="px-4 py-3 text-sm">
-                                        CZK {{ asset.unitPrice }}
-                                    </td>
-                                </tr>
-                                </tbody>
+                                        <td class="px-4 py-3 text-sm">
+                                            CZK {{ asset.unitPrice }}
+                                        </td>
+                                    </tr>
+                                    </tbody>
                                 {% endfor %}
                             </table>
                         </div>

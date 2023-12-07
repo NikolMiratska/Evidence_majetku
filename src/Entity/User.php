@@ -38,6 +38,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'ownedBy', targetEntity: AssetsManager::class)]
     private Collection $isOwnedBy;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePic = null;
+
     public function __construct()
     {
         $this->isOwnedBy = new ArrayCollection();
@@ -157,5 +160,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString()
     {
         return (string) $this->getName();
+    }
+
+    public function getProfilePic(): ?string
+    {
+        return $this->profilePic;
+    }
+
+    public function setProfilePic(?string $profilePic): static
+    {
+        $this->profilePic = $profilePic;
+
+        return $this;
     }
 }

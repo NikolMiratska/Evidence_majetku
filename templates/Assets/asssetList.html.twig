@@ -47,6 +47,21 @@
                             <span class="ml-4">Uživatelé</span>
                         </a>
                     </li>
+
+                    <li>
+                        <hr class="my-2 border-purple-400" />
+                    </li>
+
+                    <li>
+                        <div class="px-6 my-6">
+                            <a href="/createProperty">
+                                <button class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-gray-300 rounded-lg active:bg-purple-600 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:shadow-outline-purple">
+                                    Přidat hodnoty
+                                    <span class="ml-2" aria-hidden="true">+</span>
+                                </button>
+                            </a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </aside>
@@ -68,6 +83,15 @@
 
                     <ul class="flex items-center flex-shrink-0 space-x-6">
                         <!-- Profile menu -->
+                        <li class="relative">
+                            {% if app.user ? app.user.profilePic %}
+                                <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+                                    <img class="object-cover w-full h-full rounded-full" src="{{ app.user.profilePic }}" alt="" loading="lazy">
+                                    <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                        </li>
                         <li class="relative">
                             <p class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
                                 {{ app.user ? app.user.email  }}
@@ -112,6 +136,7 @@
                                 </thead>
 
                                 {% for asset in assets %}
+                                    {% if asset.name %}
                                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                                 <tr class="text-gray-700 dark:text-gray-400">
                                     <td class="px-4 py-3 text-sm">
@@ -135,10 +160,18 @@
                                         {{ asset.inventoryNumber }}
                                     </td>
 
+
                                     <td class="px-4 py-3 text-xs">
+                                            {% if asset.ownedBy %}
                                         <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                                            {{ asset.ownedBy }}
+                                                {{ asset.ownedBy.name }}
+{#                                    <a href="{{ path('user_assets', {'id': assets.user_assets}) }}">{{ asset.ownedBy.name }}</a>#}
                                         </span>
+                                            {% else %}
+                                        <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
+                                                Není přiřazen vlastník
+                                        </span>
+                                            {% endif %}
                                     </td>
 
                                     <td class="px-4 py-3 text-sm">
@@ -146,6 +179,7 @@
                                     </td>
                                 </tr>
                                 </tbody>
+                                    {% endif %}
                                 {% endfor %}
                             </table>
                         </div>

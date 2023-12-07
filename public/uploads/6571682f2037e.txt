@@ -1,0 +1,10 @@
+symfony serve -d
+php bin/console make:docker:database
+docker compose up -d
+docker compose ps
+psql --username=app --port=50700 --host=127.0.0.1 --password app
+!ChangeMe!
+
+php bin/console make:entity
+symfony console make:migration
+symfony console doctrine:migrations:migrate

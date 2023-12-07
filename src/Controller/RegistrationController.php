@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -30,7 +31,25 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            $newAsset = $form->getData();
+            $profilePic = $form->get('profilePic')->getData();
+            if($profilePic){
+                $newFileName = uniqid() . '.' . $profilePic->guessExtension();
+
+                try {
+                    $profilePic->move(
+                        $this->getParameter('kernel.project_dir') . '/public/profile',
+                        $newFileName
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $newAsset->setProfilePic('/profile/' . $newFileName);
+            }
+
             $entityManager->persist($user);
+            $entityManager->persist($newAsset);
             $entityManager->flush();
             // do anything else you need here, like send an email
 

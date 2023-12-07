@@ -49,6 +49,21 @@
                             <span class="ml-4">Uživatelé</span>
                         </a>
                     </li>
+
+                    <li>
+                        <hr class="my-2 border-purple-400" />
+                    </li>
+
+                    <li>
+                        <div class="px-6 my-6">
+                            <a href="/createProperty">
+                                <button class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-gray-300 rounded-lg active:bg-purple-600 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:shadow-outline-purple">
+                                    Přidat hodnoty
+                                    <span class="ml-2" aria-hidden="true">+</span>
+                                </button>
+                            </a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </aside>
@@ -70,6 +85,15 @@
 
                     <ul class="flex items-center flex-shrink-0 space-x-6">
                         <!-- Profile menu -->
+                        <li class="relative">
+                            {% if app.user ? app.user.profilePic %}
+                                <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+                                    <img class="object-cover w-full h-full rounded-full" src="{{ app.user.profilePic }}" alt="" loading="lazy">
+                                    <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                        </li>
                         <li class="relative">
                             <p class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
                                 {{ app.user ? app.user.email  }}
@@ -110,12 +134,108 @@
                     <main class="h-full overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                                Editovat majetek {{ assets.name }}
+                                Editovat majetek <a href="/details/{{ assets.id }}" class="hover:underline">{{ assets.name }}</a>
                             </h2>
                             <hr class="my-2 border-purple-400" />
 
-                            {{ form_start(form) }}<div class="grid gap-6 mb-8 md:grid-cols-2">
-                            {{ form_widget(form) }}</div>
+                            {{ form_start(form) }}
+                            <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                                    <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.name) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.inventoryNumber) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.unitPrice) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.guaranteePeriod) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.supplier) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.manufacturer) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.orderNumber) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.orderURL) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.manufacturingNumber) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.eliminated) }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                        {{ form_row(form.description) }}
+                                    </h4>
+                                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                        {{ form_row(form.note) }}
+                                    </h4>
+                                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                        {{ form_row(form.complaint) }}
+                                    </h4>
+                                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                        {{ form_row(form.serviceInterval) }}
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                                    <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.assetType) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.locationAsset) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.ownedBy) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.categoryAsset) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.workplaceAsset) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.documentPath) }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                                    <div class="grid gap-6 mb-8 md:grid-cols-2">
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.dateCreated) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.dateBought) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.dateReceived) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.eliminationDate) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.subsumptionDate) }}
+                                        </h4>
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                            {{ form_row(form.nextServiceDue) }}
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
                             <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
                             >Uložit úpravy</button>
                             {{ form_end(form) }}

@@ -18,8 +18,7 @@ class AssetsManager
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
     /**
@@ -31,7 +30,7 @@ class AssetsManager
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $unitPrice = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -61,7 +60,7 @@ class AssetsManager
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $manufacturingNumber = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateCreated = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -108,6 +107,18 @@ class AssetsManager
 
     #[ORM\Column(type: 'json',nullable: true)]
     private ?array $documentPaths = null;
+
+    #[ORM\ManyToOne(inversedBy: 'types')]
+    private ?AssetType $typeAsset = null;
+
+    #[ORM\ManyToOne(inversedBy: 'locations')]
+    private ?AssetsLocation $locationAsset = null;
+
+    #[ORM\ManyToOne(inversedBy: 'workplaces')]
+    private ?AssetsWorkplace $workplaceAsset = null;
+
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    private ?AssetsCategory $categoryAsset = null;
 
     public function getId(): ?int
     {
@@ -466,10 +477,10 @@ class AssetsManager
 //    {
 //        return (string) $this->getOwner();
 //    }
-    public function __toString()
-    {
-        return (string) $this->getAssetType().' '.$this->getAssetLocation().' '.$this->getWorkplace().' '.$this->getOwner().' '.$this->getCategory();
-    }
+//    public function __toString()
+//    {
+//        return (string) $this->getOwner();
+//    }
 
     public function getDocumentPaths(): ?array
     {
@@ -479,6 +490,54 @@ class AssetsManager
     public function setDocumentPaths(?array $documentPaths): self
     {
         $this->documentPaths = $documentPaths;
+
+        return $this;
+    }
+
+    public function getTypeAsset(): ?AssetType
+    {
+        return $this->typeAsset;
+    }
+
+    public function setTypeAsset(?AssetType $typeAsset): static
+    {
+        $this->typeAsset = $typeAsset;
+
+        return $this;
+    }
+
+    public function getLocationAsset(): ?AssetsLocation
+    {
+        return $this->locationAsset;
+    }
+
+    public function setLocationAsset(?AssetsLocation $locationAsset): static
+    {
+        $this->locationAsset = $locationAsset;
+
+        return $this;
+    }
+
+    public function getWorkplaceAsset(): ?AssetsWorkplace
+    {
+        return $this->workplaceAsset;
+    }
+
+    public function setWorkplaceAsset(?AssetsWorkplace $workplaceAsset): static
+    {
+        $this->workplaceAsset = $workplaceAsset;
+
+        return $this;
+    }
+
+    public function getCategoryAsset(): ?AssetsCategory
+    {
+        return $this->categoryAsset;
+    }
+
+    public function setCategoryAsset(?AssetsCategory $categoryAsset): static
+    {
+        $this->categoryAsset = $categoryAsset;
 
         return $this;
     }

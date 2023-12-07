@@ -49,6 +49,21 @@
                             <span class="ml-4">Uživatelé</span>
                         </a>
                     </li>
+
+                    <li>
+                        <hr class="my-2 border-purple-400" />
+                    </li>
+
+                    <li>
+                        <div class="px-6 my-6">
+                            <a href="/createProperty">
+                                <button class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-gray-300 rounded-lg active:bg-purple-600 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:shadow-outline-purple">
+                                    Přidat hodnoty
+                                    <span class="ml-2" aria-hidden="true">+</span>
+                                </button>
+                            </a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </aside>
@@ -70,6 +85,15 @@
 
                     <ul class="flex items-center flex-shrink-0 space-x-6">
                         <!-- Profile menu -->
+                        <li class="relative">
+                            {% if app.user ? app.user.profilePic %}
+                                <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+                                    <img class="object-cover w-full h-full rounded-full" src="{{ app.user.profilePic }}" alt="" loading="lazy">
+                                    <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+                                </div>
+                            {% else %}
+                            {% endif %}
+                        </li>
                         <li class="relative">
                             <p class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none">
                                 {{ app.user ? app.user.email  }}
@@ -132,10 +156,10 @@
                                     <b class="text-purple-400">Záruka v letech:</b> {{ assets.guaranteePeriod }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Typ:</b> {{ assets.getStringRepresentation1() }}
+                                    <b class="text-purple-400">Typ:</b> {{ assets.typeAsset }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Umístění:</b> {{ assets.assetLocation }}
+                                    <b class="text-purple-400">Umístění:</b> {{ assets.locationAsset }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Přiřazeno:</b> {{ assets.ownedBy }}
@@ -147,10 +171,10 @@
                                     <b class="text-purple-400">Status vyřazení:</b> {{ assets.eliminated }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Kategorie:</b> {{ assets.category }}
+                                    <b class="text-purple-400">Kategorie:</b> {{ assets.categoryAsset }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Pracoviště:</b> {{ assets.StringRepresentation2() }}
+                                    <b class="text-purple-400">Pracoviště:</b> {{ assets.workplaceAsset }}
                                 </p>
                             </div>
 
@@ -171,7 +195,7 @@
                                     <b class="text-purple-400">Číslo objednávky:</b> {{ assets.orderNumber }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">URL objednávky:</b> {{ assets.orderURL }}
+                                    <b class="text-purple-400">URL objednávky:</b> <a href="{{ assets.orderURL }}" class="hover:underline"> {{ assets.orderURL }} </a>
                                 </p>
                             </div>
 
@@ -209,7 +233,7 @@
                                     <b class="text-purple-400">Reklamace:</b> {{ assets.complaint }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Nahrané dokumenty:</b> <a href="{{ path('download_file', {'documentPath': assets.documentPath}) }}">{{ assets.documentPath }}</a>
+                                    <b class="text-purple-400">Nahrané dokumenty:</b> <a href="{{ path('download_file', {'documentPath': assets.documentPath}) }}" class="hover:underline">{{ assets.documentPath }}</a>
                                 </p>
                             </div>
                         </div>

@@ -2,10 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\AssetsCategory;
+use App\Entity\AssetsLocation;
 use App\Entity\AssetsManager;
+use App\Entity\AssetsWorkplace;
+use App\Entity\AssetType;
 use App\Entity\User;
 use App\Form\AssetFormType;
 use App\Form\EditUserFormType;
+use App\Form\PropertyFormType;
 use App\Repository\AssetsManagerRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,7 +66,11 @@ class AssetController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
             $newAsset = $form->getData();
-            $newOwner = $form->getData();
+            $newOwner = $form->get('newOwner')->getData();
+            $newLocation = $form->getData();
+            $newType = $form->getData();
+            $newWorkplace = $form->getData();
+            $newCategory = $form->getData();
 
             $documentPath = $form->get('documentPath')->getData();
             if($documentPath){
@@ -78,6 +87,7 @@ class AssetController extends AbstractController
 
                 $newAsset->setDocumentPath('/uploads/' . $newFileName);
             }
+//            $newAsset->setOwnedBy($newOwner);
 
             if ($asset->getOwnedBy() !== null){
                 $selectedOwner = $asset->getOwnedBy()->getName();
@@ -93,9 +103,57 @@ class AssetController extends AbstractController
                 $selectedOwner = $newOwner;
             }
 
+            if ($asset->getLocationAsset() !== null){
+                $selectedLocation = $asset->getLocationAsset()->getLocation();
+            } else {
+                $newLocationName = $form->get('newLocation')->getData();
+
+                $newLocation = new AssetsLocation();
+                $newLocation->setLocation($newLocationName);
+
+                $selectedLocation = $newLocation;
+            }
+
+            if ($asset->getTypeAsset() !== null){
+                $selectedType = $asset->getTypeAsset()->getType();
+            } else {
+                $newTypeName = $form->get('newType')->getData();
+
+                $newType = new AssetType();
+                $newType->setType($newTypeName);
+
+                $selectedType = $newType;
+            }
+
+            if ($asset->getWorkplaceAsset() !== null){
+                $selectedWorkplace = $asset->getWorkplaceAsset()->getWorkplace();
+            } else {
+                $newWorkplaceName = $form->get('newWorkplace')->getData();
+
+                $newWorkplace = new AssetsWorkplace();
+                $newWorkplace->setWorkplace($newWorkplaceName);
+
+                $selectedWorkplace = $newWorkplace;
+            }
+
+            if ($asset->getCategoryAsset() !== null){
+                $selectedCategory = $asset->getCategoryAsset()->getCategory();
+            } else {
+                $newCategoryName = $form->get('newCategory')->getData();
+
+                $newCategory = new AssetsCategory();
+                $newCategory->setCategory($newCategoryName);
+
+                $selectedCategory = $newCategory;
+            }
+
 //            $this->em->persist($newAsset->getOwnedBy());
             $this->em->persist($newAsset);
             $this->em->persist($newOwner);
+            $this->em->persist($newLocation);
+            $this->em->persist($newType);
+            $this->em->persist($newWorkplace);
+            $this->em->persist($newCategory);
             $this->em->flush();
 
             return $this->redirectToRoute('list');
@@ -211,14 +269,24 @@ class AssetController extends AbstractController
                 $assets->setSupplier($form->get('supplier')->getData());
                 $assets->setManufacturer($form->get('manufacturer')->getData());
                 $assets->setGuaranteePeriod($form->get('guaranteePeriod')->getData());
-                $assets->setAssetType($form->get('assetType')->getData());
+                $assets->setAssetType($form->get('newType')->getData());
                 $assets->setSubsumptionDate($form->get('subsumptionDate')->getData());
                 $assets->setEliminationDate($form->get('eliminationDate')->getData());
-                $assets->setAssetLocation($form->get('assetLocation')->getData());
+                $assets->setAssetLocation($form->get('newLocation')->getData());
                 $assets->setAssignedPerson($form->get('newOwner')->getData());
                 $assets->setManufacturingNumber($form->get('manufacturingNumber')->getData());
                 $assets->setDateCreated($form->get('dateCreated')->getData());
                 $assets->setNote($form->get('note')->getData());
+                $assets->setDateBought($form->get('dateBought')->getData());
+                $assets->setOrderNumber($form->get('orderNumber')->getData());
+                $assets->setOrderURL($form->get('orderURL')->getData());
+                $assets->setEliminated($form->get('eliminated')->getData());
+                $assets->setCategory($form->get('newCategory')->getData());
+                $assets->setWorkplace($form->get('newWorkplace')->getData());
+                $assets->setComplaint($form->get('complaint')->getData());
+                $assets->setDateReceived($form->get('dateReceived')->getData());
+                $assets->setNextServiceDue($form->get('nextServiceDue')->getData());
+                $assets->setServiceInterval($form->get('serviceInterval')->getData());
 //                $assets->setDocumentPath($form->get('documentPath')->getData());
 
                 $this->em->flush();
@@ -278,7 +346,25 @@ class AssetController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()){
 
-                $users->setName($form->get('name')->getData());
+            $newAsset = $form->getData();
+            $profilePic = $form->get('profilePic')->getData();
+            if($profilePic){
+                $newFileName = uniqid() . '.' . $profilePic->guessExtension();
+
+                try {
+                    $profilePic->move(
+                        $this->getParameter('kernel.project_dir') . '/public/profile',
+                        $newFileName
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $newAsset->setProfilePic('/profile/' . $newFileName);
+            }
+
+
+            $users->setName($form->get('name')->getData());
                 $users->setEmail($form->get('email')->getData());
 
 
@@ -356,5 +442,95 @@ class AssetController extends AbstractController
         $results = $this->assetsManagerRepository->findBySearchQuery($query);
 
         return $this->render('Assets/search.html.twig', ['results' => $results]);
+    }
+
+    #[Route('/user/{id}/assets', name: 'user_assets')]
+    public function userAssetsAction($id): Response
+    {
+        $userAssets = $this->assetsManagerRepository->findBy(['ownedBy' => $id]);
+//        $userAssets = $this->userRepository->findBy(['isOwnedBy' => $id]);
+
+        return $this->render('Assets/userAssets.html.twig', ['userAssets' => $userAssets]);
+    }
+
+    #[Route('/createProperty', name: 'create_property')]
+    public function createProperty(Request $request): Response
+    {
+        $asset =  new AssetsManager();
+        $form = $this->createForm(PropertyFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $newAsset = $form->getData();
+
+            if ($asset->getOwnedBy() !== null){
+                $selectedOwner = $asset->getOwnedBy()->getName();
+            } else {
+                $newOwnerName = $form->get('newOwner')->getData();
+
+                $newOwner = new User();
+                $newOwner->setName($newOwnerName);
+
+                $selectedOwner = $newOwner;
+            }
+
+            if ($asset->getLocationAsset() !== null){
+                $selectedLocation = $asset->getLocationAsset()->getLocation();
+            } else {
+                $newLocationName = $form->get('newLocation')->getData();
+
+                $newLocation = new AssetsLocation();
+                $newLocation->setLocation($newLocationName);
+
+                $selectedLocation = $newLocation;
+            }
+
+            if ($asset->getTypeAsset() !== null){
+                $selectedType = $asset->getTypeAsset()->getType();
+            } else {
+                $newTypeName = $form->get('newType')->getData();
+
+                $newType = new AssetType();
+                $newType->setType($newTypeName);
+
+                $selectedType = $newType;
+            }
+
+            if ($asset->getWorkplaceAsset() !== null){
+                $selectedWorkplace = $asset->getWorkplaceAsset()->getWorkplace();
+            } else {
+                $newWorkplaceName = $form->get('newWorkplace')->getData();
+
+                $newWorkplace = new AssetsWorkplace();
+                $newWorkplace->setWorkplace($newWorkplaceName);
+
+                $selectedWorkplace = $newWorkplace;
+            }
+
+            if ($asset->getCategoryAsset() !== null){
+                $selectedCategory = $asset->getCategoryAsset()->getCategory();
+            } else {
+                $newCategoryName = $form->get('newCategory')->getData();
+
+                $newCategory = new AssetsCategory();
+                $newCategory->setCategory($newCategoryName);
+
+                $selectedCategory = $newCategory;
+            }
+
+            $this->em->persist($newAsset);
+            $this->em->persist($newOwner);
+            $this->em->persist($newLocation);
+            $this->em->persist($newType);
+            $this->em->persist($newWorkplace);
+            $this->em->persist($newCategory);
+            $this->em->flush();
+
+            return $this->redirectToRoute('create_property');
+        }
+
+        return $this->render('Assets/createProperty.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 }

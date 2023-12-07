@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -59,6 +60,15 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('profilePic', FileType::class, array(
+                'attr' => array(
+                    'class' => 'px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
+                ),
+                'required' => false,
+                'mapped' => false,
+                'label' => 'Profilová fotka',
+                'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-sm'],
+            ))
         ;
     }
 

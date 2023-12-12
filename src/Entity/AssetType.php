@@ -15,7 +15,7 @@ class AssetType
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $type = null;
 
     #[ORM\OneToMany(mappedBy: 'typeAsset', targetEntity: AssetsManager::class)]

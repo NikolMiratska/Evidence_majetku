@@ -120,6 +120,9 @@ class AssetsManager
     #[ORM\ManyToOne(inversedBy: 'categories')]
     private ?AssetsCategory $categoryAsset = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $numberField = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -460,27 +463,6 @@ class AssetsManager
 
         return $this;
     }
-    public function getStringRepresentation1(): string
-    {
-        return (string) $this->getAssetType();
-    }
-    //.' '.$this->getAssetLocation().' '.$this->getWorkplace().' '.$this->getOwner().' '.$this->getCategory()
-    public function getStringRepresentation2(): string
-    {
-        return (string) $this->getWorkplace();
-    }
-//    public function __toString3(): string
-//    {
-//        return (string)$this->getAssetLocation();
-//    }
-//    public function __toString4(): string
-//    {
-//        return (string) $this->getOwner();
-//    }
-//    public function __toString()
-//    {
-//        return (string) $this->getOwner();
-//    }
 
     public function getDocumentPaths(): ?array
     {
@@ -538,6 +520,18 @@ class AssetsManager
     public function setCategoryAsset(?AssetsCategory $categoryAsset): static
     {
         $this->categoryAsset = $categoryAsset;
+
+        return $this;
+    }
+
+    public function getNumberField(): ?int
+    {
+        return $this->numberField;
+    }
+
+    public function setNumberField(?int $numberField): static
+    {
+        $this->numberField = $numberField;
 
         return $this;
     }

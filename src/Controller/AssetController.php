@@ -9,10 +9,24 @@ use App\Entity\AssetsWorkplace;
 use App\Entity\AssetType;
 use App\Entity\User;
 use App\Form\AssetFormType;
+use App\Form\CategoryFormType;
+use App\Form\EditCategoryFormType;
+use App\Form\EditLocationFormType;
+use App\Form\EditTypeFormType;
 use App\Form\EditUserFormType;
+use App\Form\EditWorkplaceFormType;
+use App\Form\LocationFormType;
+use App\Form\OwnerFormType;
 use App\Form\PropertyFormType;
+use App\Form\TypeFormType;
+use App\Form\WorkplaceFormType;
+use App\Repository\AssetsCategoryRepository;
+use App\Repository\AssetsLocationRepository;
 use App\Repository\AssetsManagerRepository;
+use App\Repository\AssetsWorkplaceRepository;
+use App\Repository\AssetTypeRepository;
 use App\Repository\UserRepository;
+use App\Service\CategoryGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,11 +44,19 @@ class AssetController extends AbstractController
     private $em;
     private $assetsManagerRepository;
     private $userRepository;
-    public function __construct(AssetsManagerRepository $assetsManagerRepository, EntityManagerInterface $em, UserRepository $userRepository)
+    private $assetTypeRepository;
+    private $assetsCategoryRepository;
+    private $assetsLocationRepository;
+    private $assetsWorkplaceRepository;
+    public function __construct(AssetsManagerRepository $assetsManagerRepository, EntityManagerInterface $em, UserRepository $userRepository, AssetTypeRepository $assetTypeRepository, AssetsCategoryRepository $assetsCategoryRepository, AssetsLocationRepository $assetsLocationRepository, AssetsWorkplaceRepository $assetsWorkplaceRepository)
     {
         $this->assetsManagerRepository = $assetsManagerRepository;
         $this->em = $em;
         $this->userRepository = $userRepository;
+        $this->assetTypeRepository = $assetTypeRepository;
+        $this->assetsCategoryRepository = $assetsCategoryRepository;
+        $this->assetsLocationRepository = $assetsLocationRepository;
+        $this->assetsWorkplaceRepository = $assetsWorkplaceRepository;
     }
     #[Route('/')]
     public function homepage(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
@@ -66,94 +88,55 @@ class AssetController extends AbstractController
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
             $newAsset = $form->getData();
-            $newOwner = $form->get('newOwner')->getData();
-            $newLocation = $form->getData();
-            $newType = $form->getData();
-            $newWorkplace = $form->getData();
-            $newCategory = $form->getData();
 
-            $documentPath = $form->get('documentPath')->getData();
-            if($documentPath){
-                $newFileName = uniqid() . '.' . $documentPath->guessExtension();
-
-                try {
-                    $documentPath->move(
-                        $this->getParameter('kernel.project_dir') . '/public/uploads',
-                        $newFileName
-                    );
-                } catch (FileException $e) {
-                    return new Response($e->getMessage());
-                }
-
-                $newAsset->setDocumentPath('/uploads/' . $newFileName);
-            }
-//            $newAsset->setOwnedBy($newOwner);
-
-            if ($asset->getOwnedBy() !== null){
-                $selectedOwner = $asset->getOwnedBy()->getName();
-            } else {
-                $newOwnerName = $form->get('newOwner')->getData();
-
-                $newOwner = new User();
-                $newOwner->setName($newOwnerName);
+//            $documentPath = $form->get('documentPath')->getData();
+//            if($documentPath){
+//                $newFileName = uniqid() . '.' . $documentPath->guessExtension();
 //
-//                $this->em->persist($newOwner);
-//                $this->em->flush();
+//                try {
+//                    $documentPath->move(
+//                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+//                        $newFileName
+//                    );
+//                } catch (FileException $e) {
+//                    return new Response($e->getMessage());
+//                }
+//
+//                $newAsset->setDocumentPath('/uploads/' . $newFileName);
+//            }
 
-                $selectedOwner = $newOwner;
+            $documentPaths = $form->get('documentPaths')->getData();
+            if($documentPaths){
+
+                foreach ($newAsset as $documentPaths){
+                    $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
+
+                    try {
+                        $documentPaths->move(
+                            $this->getParameter('kernel.project_dir') . '/public/uploads',
+                            $newFileName
+                        );
+                    } catch (FileException $e) {
+                        return new Response($e->getMessage());
+                    }
+
+                    $newAsset->setDocumentPath('/uploads/' . $newFileName);
+                }
+//                $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
+//
+//                try {
+//                    $documentPaths->move(
+//                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+//                        $newFileName
+//                    );
+//                } catch (FileException $e) {
+//                    return new Response($e->getMessage());
+//                }
+//
+//                $newAsset->setDocumentPath('/uploads/' . $newFileName);
             }
 
-            if ($asset->getLocationAsset() !== null){
-                $selectedLocation = $asset->getLocationAsset()->getLocation();
-            } else {
-                $newLocationName = $form->get('newLocation')->getData();
-
-                $newLocation = new AssetsLocation();
-                $newLocation->setLocation($newLocationName);
-
-                $selectedLocation = $newLocation;
-            }
-
-            if ($asset->getTypeAsset() !== null){
-                $selectedType = $asset->getTypeAsset()->getType();
-            } else {
-                $newTypeName = $form->get('newType')->getData();
-
-                $newType = new AssetType();
-                $newType->setType($newTypeName);
-
-                $selectedType = $newType;
-            }
-
-            if ($asset->getWorkplaceAsset() !== null){
-                $selectedWorkplace = $asset->getWorkplaceAsset()->getWorkplace();
-            } else {
-                $newWorkplaceName = $form->get('newWorkplace')->getData();
-
-                $newWorkplace = new AssetsWorkplace();
-                $newWorkplace->setWorkplace($newWorkplaceName);
-
-                $selectedWorkplace = $newWorkplace;
-            }
-
-            if ($asset->getCategoryAsset() !== null){
-                $selectedCategory = $asset->getCategoryAsset()->getCategory();
-            } else {
-                $newCategoryName = $form->get('newCategory')->getData();
-
-                $newCategory = new AssetsCategory();
-                $newCategory->setCategory($newCategoryName);
-
-                $selectedCategory = $newCategory;
-            }
-
-//            $this->em->persist($newAsset->getOwnedBy());
-            $this->em->persist($newAsset);
-            $this->em->persist($newOwner);
-            $this->em->persist($newLocation);
-            $this->em->persist($newType);
-            $this->em->persist($newWorkplace);
-            $this->em->persist($newCategory);
+            $this->em->persist($documentPaths);
             $this->em->flush();
 
             return $this->redirectToRoute('list');
@@ -164,6 +147,25 @@ class AssetController extends AbstractController
         ]);
 
     }
+
+    // Your controller action to show the confirmation page
+    #[Route('/confirmDelete/{id}')]
+    public function confirmDeleteAction(AssetsCategory $category, Request $request): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+//        $category = $this->assetsCategoryRepository->find($id);
+        // Fetch associated assets for the category
+        $associatedAssets = $entityManager
+            ->getRepository(AssetsManager::class)
+            ->findBy(['AssetsCategory' => $category]);
+
+        return $this->render('Assets/confirmDelete.html.twig', [
+            'category' => $category,
+            'associatedAssets' => $associatedAssets,
+        ]);
+    }
+
 
     #[Route('/list', name: 'list')]
     public function assetList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
@@ -184,15 +186,24 @@ class AssetController extends AbstractController
     }
 
     #[Route('/details/{id}', name: 'detail_asset')]
-    public function assetDetail($id, Request $request): Response
+    public function assetDetail($id, Request $request, CategoryGenerator $categoryGenerator): Response
     {
         $assets = $this->assetsManagerRepository->find($id);
-        $assets->getStringRepresentation1();
-        $assets->getStringRepresentation2();
+
+        $categories = $this->assetsManagerRepository->find($id);
+
+        if (!$categories) {
+            throw $this->createNotFoundException('Product not found');
+        }
+
+        $categoryName = $categories->getCategory();
+        $category = $categoryGenerator->generateCategory($categoryName);
+
 
         return $this->render('Assets/details.html.twig',
             [
-                'assets' => $assets
+                'assets' => $assets,
+                'category' => $category,
             ]);
     }
     #[Route('/userDetails/{id}', name: 'detail_user')]
@@ -203,6 +214,50 @@ class AssetController extends AbstractController
         return $this->render('Assets/userDetails.html.twig',
             [
                 'users' => $users
+            ]);
+    }
+
+    #[Route('/categoryDetails/{id}', name: 'detail_category')]
+    public function categoryDetail($id, Request $request): Response
+    {
+        $categories = $this->assetsCategoryRepository->find($id);
+
+        return $this->render('Assets/categoryDetails.html.twig',
+            [
+                'categories' => $categories
+            ]);
+    }
+
+    #[Route('/locationDetails/{id}', name: 'detail_location')]
+    public function locationDetail($id, Request $request): Response
+    {
+        $locations = $this->assetsLocationRepository->find($id);
+
+        return $this->render('Assets/locationDetails.html.twig',
+            [
+                'locations' => $locations
+            ]);
+    }
+
+    #[Route('/typeDetails/{id}', name: 'detail_type')]
+    public function typeDetail($id, Request $request): Response
+    {
+        $types = $this->assetTypeRepository->find($id);
+
+        return $this->render('Assets/typeDetails.html.twig',
+            [
+                'types' => $types
+            ]);
+    }
+
+    #[Route('/workplaceDetails/{id}', name: 'detail_workplace')]
+    public function workplaceDetail($id, Request $request): Response
+    {
+        $workplaces = $this->assetsWorkplaceRepository->find($id);
+
+        return $this->render('Assets/workplaceDetails.html.twig',
+            [
+                'workplaces' => $workplaces
             ]);
     }
 
@@ -269,11 +324,11 @@ class AssetController extends AbstractController
                 $assets->setSupplier($form->get('supplier')->getData());
                 $assets->setManufacturer($form->get('manufacturer')->getData());
                 $assets->setGuaranteePeriod($form->get('guaranteePeriod')->getData());
-                $assets->setAssetType($form->get('newType')->getData());
+                $assets->setAssetType($form->get('assetType')->getData());
                 $assets->setSubsumptionDate($form->get('subsumptionDate')->getData());
                 $assets->setEliminationDate($form->get('eliminationDate')->getData());
-                $assets->setAssetLocation($form->get('newLocation')->getData());
-                $assets->setAssignedPerson($form->get('newOwner')->getData());
+                $assets->setAssetLocation($form->get('locationAsset')->getData());
+                $assets->setAssignedPerson($form->get('ownedBy')->getData());
                 $assets->setManufacturingNumber($form->get('manufacturingNumber')->getData());
                 $assets->setDateCreated($form->get('dateCreated')->getData());
                 $assets->setNote($form->get('note')->getData());
@@ -281,8 +336,8 @@ class AssetController extends AbstractController
                 $assets->setOrderNumber($form->get('orderNumber')->getData());
                 $assets->setOrderURL($form->get('orderURL')->getData());
                 $assets->setEliminated($form->get('eliminated')->getData());
-                $assets->setCategory($form->get('newCategory')->getData());
-                $assets->setWorkplace($form->get('newWorkplace')->getData());
+                $assets->setCategory($form->get('categoryAsset')->getData());
+                $assets->setWorkplace($form->get('workplaceAsset')->getData());
                 $assets->setComplaint($form->get('complaint')->getData());
                 $assets->setDateReceived($form->get('dateReceived')->getData());
                 $assets->setNextServiceDue($form->get('nextServiceDue')->getData());
@@ -318,6 +373,63 @@ class AssetController extends AbstractController
         return $this->redirectToRoute('user');
     }
 
+    #[Route('/deleteType/{id}', methods: ['GET', 'DELETE'], name: 'delete_type')]
+    public function deleteType($id){
+        $types = $this->assetTypeRepository->find($id);
+        $this->em->remove($types);
+        $this->em->flush();
+
+        return $this->redirectToRoute('type');
+    }
+
+    #[Route('/deleteCategory/{id}', methods: ['GET', 'DELETE'], name: 'delete_category')]
+    public function deleteCategory($id){
+        $categories = $this->assetsCategoryRepository->find($id);
+        $this->em->remove($categories);
+        $this->em->flush();
+
+        return $this->redirectToRoute('category');
+    }
+
+    #[Route('/deleteLocation/{id}', methods: ['GET', 'DELETE'], name: 'delete_location')]
+    public function deleteLocation($id){
+        $locations = $this->assetsLocationRepository->find($id);
+        $this->em->remove($locations);
+        $this->em->flush();
+
+        return $this->redirectToRoute('location');
+    }
+
+    #[Route('/deleteWorkplace/{id}', methods: ['GET', 'DELETE'], name: 'delete_workplace')]
+    public function deleteWorkplace($id){
+        $workplaces = $this->assetsWorkplaceRepository->find($id);
+        $this->em->remove($workplaces);
+        $this->em->flush();
+
+        return $this->redirectToRoute('workplace');
+    }
+
+//    #[Route('/details/{id}')]
+//    public function generateCategoryForProduct(CategoryGenerator $categoryGenerator, int $id)
+//    {
+//        // Retrieve the product entity from the database
+//        $categories = $this->assetsCategoryRepository->find($id);
+//
+//        if (!$categories) {
+//            throw $this->createNotFoundException('Product not found');
+//        }
+//
+//        // Access the 'name' column value of the product entity
+//        $productName = $categories->getCategory();
+//
+//        // Use the product name to generate a category
+//        $category = $categoryGenerator->generateCategory($productName);
+//
+//        return $this->render('Assets/details.html.twig', [
+//            'category' => $category,
+//        ]);
+//    }
+
     #[Route('/users', name: 'user')]
     public function usersList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
@@ -330,9 +442,201 @@ class AssetController extends AbstractController
             50 /*limit per page*/
         );
 
+        $asset =  new AssetsManager();
+        $form = $this->createForm(OwnerFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            if ($asset->getOwnedBy() !== null){
+                $selectedOwner = $asset->getOwnedBy()->getName();
+            } else {
+                $newOwnerName = $form->get('newOwner')->getData();
+
+                $newOwner = new User();
+                $newOwner->setName($newOwnerName);
+
+                $selectedOwner = $newOwner;
+            }
+
+            $this->em->persist($newOwner);
+            $this->em->flush();
+
+            return $this->redirectToRoute('user');
+        }
+
         return $this->render('Assets/usersList.html.twig',
             [
-                'users' => $pagination
+                'users' => $pagination,
+                'form' => $form->createView(),
+            ]);
+    }
+
+    #[Route('/types', name: 'type')]
+    public function typeList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
+    {
+        $dql   = "SELECT a FROM App\Entity\AssetType a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            50 /*limit per page*/
+        );
+
+        $asset =  new AssetsManager();
+        $form = $this->createForm(TypeFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            if ($asset->getTypeAsset() !== null){
+                $selectedType = $asset->getTypeAsset()->getType();
+            } else {
+                $newTypeName = $form->get('newType')->getData();
+
+                $newType = new AssetType();
+                $newType->setType($newTypeName);
+
+                $selectedType = $newType;
+            }
+
+            $this->em->persist($newType);
+            $this->em->flush();
+
+            return $this->redirectToRoute('type');
+        }
+
+        return $this->render('Assets/typeList.html.twig',
+            [
+                'types' => $pagination,
+                'form' => $form->createView(),
+            ]);
+    }
+
+    #[Route('/categories', name: 'category')]
+    public function categoryList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
+    {
+        $dql   = "SELECT a FROM App\Entity\AssetsCategory a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            50 /*limit per page*/
+        );
+
+        $asset =  new AssetsManager();
+        $form = $this->createForm(CategoryFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            if ($asset->getCategoryAsset() !== null){
+                $selectedCategory = $asset->getCategoryAsset()->getCategory();
+            } else {
+                $newCategoryName = $form->get('newCategory')->getData();
+
+                $newCategory = new AssetsCategory();
+                $newCategory->setCategory($newCategoryName);
+
+                $selectedCategory = $newCategory;
+            }
+
+            $this->em->persist($newCategory);
+            $this->em->flush();
+
+            return $this->redirectToRoute('category');
+        }
+
+        return $this->render('Assets/categoryList.html.twig',
+            [
+                'categories' => $pagination,
+                'form' => $form->createView(),
+            ]);
+    }
+
+    #[Route('/locations', name: 'location')]
+    public function locationList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
+    {
+        $dql   = "SELECT a FROM App\Entity\AssetsLocation a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            50 /*limit per page*/
+        );
+
+        $asset =  new AssetsManager();
+        $form = $this->createForm(LocationFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            if ($asset->getLocationAsset() !== null){
+                $selectedLocation = $asset->getLocationAsset()->getLocation();
+            } else {
+                $newLocationName = $form->get('newLocation')->getData();
+
+                $newLocation = new AssetsLocation();
+                $newLocation->setLocation($newLocationName);
+
+                $selectedLocation = $newLocation;
+            }
+
+            $this->em->persist($newLocation);
+            $this->em->flush();
+
+            return $this->redirectToRoute('location');
+        }
+
+        return $this->render('Assets/locationList.html.twig',
+            [
+                'locations' => $pagination,
+                'form' => $form->createView(),
+            ]);
+    }
+
+    #[Route('/workplaces', name: 'workplace')]
+    public function workplaceList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
+    {
+        $dql   = "SELECT a FROM App\Entity\AssetsWorkplace a";
+        $query = $em->createQuery($dql);
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), /*page number*/
+            50 /*limit per page*/
+        );
+
+        $asset =  new AssetsManager();
+        $form = $this->createForm(WorkplaceFormType::class, $asset);
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+
+            if ($asset->getWorkplaceAsset() !== null){
+                $selectedWorkplace = $asset->getWorkplaceAsset()->getWorkplace();
+            } else {
+                $newWorkplaceName = $form->get('newWorkplace')->getData();
+
+                $newWorkplace = new AssetsWorkplace();
+                $newWorkplace->setWorkplace($newWorkplaceName);
+
+                $selectedWorkplace = $newWorkplace;
+            }
+
+            $this->em->persist($newWorkplace);
+            $this->em->flush();
+
+            return $this->redirectToRoute('workplace');
+        }
+
+        return $this->render('Assets/workplaceList.html.twig',
+            [
+                'workplaces' => $pagination,
+                'form' => $form->createView(),
             ]);
     }
 
@@ -374,6 +678,90 @@ class AssetController extends AbstractController
 
         return $this->render('Assets/editUser.html.twig', [
             'users' => $users,
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/editCategory/{id}', name: 'edit_category')]
+    public function editCategory($id, Request $request): Response
+    {
+        $categories = $this->assetsCategoryRepository->find($id);
+        $form = $this->createForm(EditCategoryFormType::class, $categories);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+            $categories->setCategory($form->get('category')->getData());
+
+            $this->em->flush();
+            return $this->redirectToRoute('category');
+        }
+
+        return $this->render('Assets/editCategory.html.twig', [
+            'categories' => $categories,
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/editLocation/{id}', name: 'edit_location')]
+    public function editLocation($id, Request $request): Response
+    {
+        $locations = $this->assetsLocationRepository->find($id);
+        $form = $this->createForm(EditLocationFormType::class, $locations);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+            $locations->setLocation($form->get('location')->getData());
+
+            $this->em->flush();
+            return $this->redirectToRoute('location');
+        }
+
+        return $this->render('Assets/editLocation.html.twig', [
+            'locations' => $locations,
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/editType/{id}', name: 'edit_type')]
+    public function editType($id, Request $request): Response
+    {
+        $types = $this->assetTypeRepository->find($id);
+        $form = $this->createForm(EditTypeFormType::class, $types);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+            $types->setType($form->get('type')->getData());
+
+            $this->em->flush();
+            return $this->redirectToRoute('type');
+        }
+
+        return $this->render('Assets/editType.html.twig', [
+            'types' => $types,
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/editWorkplace/{id}', name: 'edit_workplace')]
+    public function editWorkplace($id, Request $request): Response
+    {
+        $workplaces = $this->assetsWorkplaceRepository->find($id);
+        $form = $this->createForm(EditWorkplaceFormType::class, $workplaces);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()){
+            $workplaces->setWorkplace($form->get('workplace')->getData());
+
+            $this->em->flush();
+            return $this->redirectToRoute('workplace');
+        }
+
+        return $this->render('Assets/editWorkplace.html.twig', [
+            'workplaces' => $workplaces,
             'form' => $form->createView()
         ]);
     }

@@ -50,6 +50,42 @@
                         </a>
                     </li>
 
+                    <li class="relative px-6 py-3">
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200" href="/types">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            <span class="ml-4">Druhy</span>
+                        </a>
+                    </li>
+
+                    <li class="relative px-6 py-3">
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200" href="/categories">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            <span class="ml-4">Kategorie</span>
+                        </a>
+                    </li>
+
+                    <li class="relative px-6 py-3">
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200" href="/locations">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            <span class="ml-4">Umístění</span>
+                        </a>
+                    </li>
+
+                    <li class="relative px-6 py-3">
+                        <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200" href="/workplaces">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                            </svg>
+                            <span class="ml-4">Pracoviště</span>
+                        </a>
+                    </li>
+
                     <li>
                         <hr class="my-2 border-purple-400" />
                     </li>
@@ -174,7 +210,7 @@
                             <div class="grid gap-6 mb-8 md:grid-cols-2">
                                 <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
                                     <div class="grid gap-6 mb-8 md:grid-cols-2">
-                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300" style="border-radius: 25rem">
                                             {{ form_row(form.assetType) }}
                                         </h4>
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
@@ -189,8 +225,11 @@
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
                                             {{ form_row(form.workplaceAsset) }}
                                         </h4>
+{#                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">#}
+{#                                            {{ form_row(form.documentPath) }}#}
+{#                                        </h4>#}
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                                            {{ form_row(form.documentPath) }}
+                                            {{ form_row(form.documentPaths) }}
                                         </h4>
                                     </div>
                                 </div>

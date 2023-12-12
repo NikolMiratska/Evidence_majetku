@@ -15,7 +15,7 @@ class AssetsWorkplace
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $workplace = null;
 
     #[ORM\OneToMany(mappedBy: 'workplaceAsset', targetEntity: AssetsManager::class)]

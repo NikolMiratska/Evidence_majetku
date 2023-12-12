@@ -36,6 +36,30 @@ class AssetsManagerRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+//    public function getLastAssignedNumberForType($type)
+//    {
+//        return $this->createQueryBuilder('e')
+//            ->select('MAX(e.numberField)')
+//            ->andWhere('e.type = :type')
+//            ->setParameter('type', $type)
+//            ->getQuery()
+//            ->getSingleScalarResult() ?: 0;
+//    }
+//
+//    public function updateLastAssignedNumberForType($type, $newNumber)
+//    {
+//        $entityManager = $this->getEntityManager();
+//
+//        $entity = $this->findOneBy(['type' => $type]);
+//
+//        if ($entity) {
+//            $entity->setNumberField($newNumber);
+//
+//            $entityManager->persist($entity);
+//            $entityManager->flush();
+//        }
+//    }
+
 //    /**
 //     * @return AssetsManager[] Returns an array of AssetsManager objects
 //     */

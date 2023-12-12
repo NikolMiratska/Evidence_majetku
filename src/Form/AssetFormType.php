@@ -9,6 +9,7 @@ use App\Entity\AssetsWorkplace;
 use App\Entity\AssetType;
 use App\Entity\User;
 use App\Repository\AssetsManagerRepository;
+use App\Repository\AssetTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -52,7 +53,7 @@ class AssetFormType extends AbstractType
             ->add('description', TextareaType::class, [
                 'attr' => array(
                     'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder' => 'Popis',
+                    'rows' => '4',
                 ),
                 'label' => 'Popis',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
@@ -115,14 +116,18 @@ class AssetFormType extends AbstractType
             ])
             ->add('assetType', EntityType::class, [
                 'class' => AssetType::class,
-                'choice_label' => fn(AssetType $u) => $u->getType(),
-//                'query_builder' => function (AssetsManagerRepository $er) {
-//                    return $er->createQueryBuilder('u')
-//                        ->where('u.assetType IS NOT NULL')
-//                        ->groupBy('u.assetType');
-//                },
+                'choice_label' => 'type',
+//                'row_attr' => array(
+//                    'class'=> 'w-2.5 h-2.5 ms-3',
+//                    'aria-hidden' => true,
+//                    'xmlns' => 'http://www.w3.org/2000/svg',
+//                    'fill' => 'none',
+//                    'viewBox' => '0 0 10 6'
+//
+//                ),
+                'choice_value' => 'id',
                 'attr' => array(
-                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
+                    'class' => 'input-with-icon h-8 block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray',
                     'placeholder' => 'Druh',
                 ),
                 'label' => 'Druh (židle, stůl,..)',
@@ -133,7 +138,7 @@ class AssetFormType extends AbstractType
                 'class' => AssetsLocation::class,
                 'choice_label' => fn(AssetsLocation $u) => $u->getLocation(),
                 'attr' => array(
-                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
+                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray input-with-icon h-8',
                     'placeholder' => 'Umístění',
                 ),
                 'label' => 'Umístění majetku ve firmě',
@@ -144,7 +149,7 @@ class AssetFormType extends AbstractType
                 'class' => User::class,
                 'choice_label' => fn(User $u) => $u->getName(),
                 'attr' => array(
-                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
+                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray input-with-icon h-8',
                     'placeholder' => 'Přizeno (člověku)',
                 ),
                 'label' => 'Přizeno (člověku)',
@@ -163,7 +168,7 @@ class AssetFormType extends AbstractType
             ->add('note', TextareaType::class, [
                 'attr' => array(
                     'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder' => 'Poznámky',
+                    'rows' => '4',
                 ),
                 'label' => 'Poznámky',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
@@ -197,7 +202,7 @@ class AssetFormType extends AbstractType
                 'class' => AssetsCategory::class,
                 'choice_label' => fn(AssetsCategory $u) => $u->getCategory(),
                 'attr' => array(
-                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
+                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray input-with-icon h-8',
                     'placeholder' => 'Kategorie (motorový, elektrický,..)',
                 ),
                 'label' => 'Kategorie',
@@ -208,7 +213,7 @@ class AssetFormType extends AbstractType
                 'class' => AssetsWorkplace::class,
                 'choice_label' => fn(AssetsWorkplace $u) => $u->getWorkplace(),
                 'attr' => array(
-                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
+                    'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray input-with-icon h-8',
                     'placeholder' => 'Pracoviště',
                 ),
                 'label' => 'Pracoviště',
@@ -218,7 +223,7 @@ class AssetFormType extends AbstractType
             ->add('complaint', TextareaType::class, [
                 'attr' => array(
                     'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder' => 'Popis reklamace',
+                    'rows' => '4',
                 ),
                 'label' => 'Reklamace',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
@@ -275,13 +280,22 @@ class AssetFormType extends AbstractType
             ->add('serviceInterval', TextareaType::class, [
                 'attr' => array(
                     'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
-                    'placeholder' => 'Servisní interval',
+                    'rows' => '4',
                 ),
                 'label' => 'Servisní interval',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'required' => false,
             ])
-            ->add('documentPath', FileType::class, array(
+//            ->add('documentPath', FileType::class, array(
+//                'attr' => array(
+//                    'class' => 'px-3 py-3 w-56 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
+//                ),
+//                'required' => false,
+//                'mapped' => false,
+//                'label' => 'Dokumenty',
+//                'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+//            ))
+            ->add('documentPaths', FileType::class, array(
                 'attr' => array(
                     'class' => 'px-3 py-3 w-56 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
                 ),
@@ -289,11 +303,8 @@ class AssetFormType extends AbstractType
                 'mapped' => false,
                 'label' => 'Dokumenty',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'multiple' => true,
             ))
-//            ->add('documentPaths', FileType::class, [
-//                'multiple' => true,
-//                'required' => false,
-//            ]);
         ;
     }
 

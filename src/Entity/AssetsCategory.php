@@ -15,7 +15,7 @@ class AssetsCategory
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $category = null;
 
     #[ORM\OneToMany(mappedBy: 'categoryAsset', targetEntity: AssetsManager::class)]

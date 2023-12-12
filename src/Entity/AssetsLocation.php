@@ -15,7 +15,7 @@ class AssetsLocation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, unique: true, nullable: false)]
     private ?string $location = null;
 
     #[ORM\OneToMany(mappedBy: 'locationAsset', targetEntity: AssetsManager::class)]

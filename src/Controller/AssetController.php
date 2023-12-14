@@ -7,6 +7,7 @@ use App\Entity\AssetsLocation;
 use App\Entity\AssetsManager;
 use App\Entity\AssetsWorkplace;
 use App\Entity\AssetType;
+use App\Entity\Files;
 use App\Entity\User;
 use App\Form\AssetFormType;
 use App\Form\CategoryFormType;
@@ -105,38 +106,59 @@ class AssetController extends AbstractController
 //                $newAsset->setDocumentPath('/uploads/' . $newFileName);
 //            }
 
-            $documentPaths = $form->get('documentPaths')->getData();
-            if($documentPaths){
-
-                foreach ($newAsset as $documentPaths){
-                    $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
-
-                    try {
-                        $documentPaths->move(
-                            $this->getParameter('kernel.project_dir') . '/public/uploads',
-                            $newFileName
-                        );
-                    } catch (FileException $e) {
-                        return new Response($e->getMessage());
-                    }
-
-                    $newAsset->setDocumentPath('/uploads/' . $newFileName);
-                }
-//                $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
+//            $documentPaths = $form->get('documentPaths')->getData();
+//            if($documentPaths){
 //
-//                try {
-//                    $documentPaths->move(
-//                        $this->getParameter('kernel.project_dir') . '/public/uploads',
-//                        $newFileName
-//                    );
-//                } catch (FileException $e) {
-//                    return new Response($e->getMessage());
+//                foreach ($newAsset as $documentPaths){
+//                    $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
+//
+//                    try {
+//                        $documentPaths->move(
+//                            $this->getParameter('kernel.project_dir') . '/public/uploads',
+//                            $newFileName
+//                        );
+//                    } catch (FileException $e) {
+//                        return new Response($e->getMessage());
+//                    }
+//
+//                    $newAsset->setDocumentPath('/uploads/' . $newFileName);
 //                }
-//
-//                $newAsset->setDocumentPath('/uploads/' . $newFileName);
-            }
+////                $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
+////
+////                try {
+////                    $documentPaths->move(
+////                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+////                        $newFileName
+////                    );
+////                } catch (FileException $e) {
+////                    return new Response($e->getMessage());
+////                }
+////
+////                $newAsset->setDocumentPath('/uploads/' . $newFileName);
+//            }
+//            $uploadedFiles = $request->files->get('files');
 
-            $this->em->persist($documentPaths);
+            $uploadedFiles = $form->get('files')->getData();
+            if($uploadedFiles){
+            foreach ($uploadedFiles as $uploadedFile) {
+                $fileEntity = new Files();
+                $filename = uniqid() . '.' . $uploadedFile->guessExtension();
+
+                try {
+                    $uploadedFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/uploads',
+                        $filename
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $fileEntity->setFilename('/uploads/' . $filename);
+                $newAsset->addFile($fileEntity);
+            }}
+
+//            $this->em->persist($documentPaths);
+            $this->em->persist($newAsset);
             $this->em->flush();
 
             return $this->redirectToRoute('list');
@@ -155,7 +177,7 @@ class AssetController extends AbstractController
         $entityManager = $this->getDoctrine()->getManager();
 
 //        $category = $this->assetsCategoryRepository->find($id);
-        // Fetch associated assets for the category
+
         $associatedAssets = $entityManager
             ->getRepository(AssetsManager::class)
             ->findBy(['AssetsCategory' => $category]);
@@ -268,7 +290,7 @@ class AssetController extends AbstractController
         $form = $this->createForm(AssetFormType::class, $assets);
 
         $form->handleRequest($request);
-        $documentPath = $form->get('documentPath')->getData();
+        $documentPath = $form->get('files')->getData();
 
         if ($form->isSubmitted() && $form->isValid()){
             if ($documentPath){
@@ -291,7 +313,7 @@ class AssetController extends AbstractController
 
                         $assets->setDocumentPath('/uploads/' . $newFileName);
                         $this->em->flush();
-                        return $this->redirectToRoute('list');
+                        return $this->redirectToRoute('detail_asset', ['id' => $id]);
                     }
                 }
 //            if ($documentPath){
@@ -342,10 +364,9 @@ class AssetController extends AbstractController
                 $assets->setDateReceived($form->get('dateReceived')->getData());
                 $assets->setNextServiceDue($form->get('nextServiceDue')->getData());
                 $assets->setServiceInterval($form->get('serviceInterval')->getData());
-//                $assets->setDocumentPath($form->get('documentPath')->getData());
 
                 $this->em->flush();
-                return $this->redirectToRoute('list');
+                return $this->redirectToRoute('detail_asset', ['id' => $id]);
             }
         }
 
@@ -648,11 +669,11 @@ class AssetController extends AbstractController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
 
             $newAsset = $form->getData();
             $profilePic = $form->get('profilePic')->getData();
-            if($profilePic){
+            if ($profilePic) {
                 $newFileName = uniqid() . '.' . $profilePic->guessExtension();
 
                 try {
@@ -667,13 +688,20 @@ class AssetController extends AbstractController
                 $newAsset->setProfilePic('/profile/' . $newFileName);
             }
 
-
+            $newMail = $form->get('email')->getData();
+            $newPass = $form->get('plainPassword')->getData();
             $users->setName($form->get('name')->getData());
+            if ($newMail) {
                 $users->setEmail($form->get('email')->getData());
+            }
+            if ($newPass) {
+                $users->setPassword($form->get('plainPassword')->getData());
+            }
+
 
 
                 $this->em->flush();
-                return $this->redirectToRoute('user');
+                return $this->redirectToRoute('detail_user', ['id' => $id]);
             }
 
         return $this->render('Assets/editUser.html.twig', [
@@ -694,7 +722,7 @@ class AssetController extends AbstractController
             $categories->setCategory($form->get('category')->getData());
 
             $this->em->flush();
-            return $this->redirectToRoute('category');
+            return $this->redirectToRoute('detail_category', ['id' => $id]);
         }
 
         return $this->render('Assets/editCategory.html.twig', [
@@ -715,7 +743,7 @@ class AssetController extends AbstractController
             $locations->setLocation($form->get('location')->getData());
 
             $this->em->flush();
-            return $this->redirectToRoute('location');
+            return $this->redirectToRoute('detail_location', ['id' => $id]);
         }
 
         return $this->render('Assets/editLocation.html.twig', [
@@ -736,7 +764,7 @@ class AssetController extends AbstractController
             $types->setType($form->get('type')->getData());
 
             $this->em->flush();
-            return $this->redirectToRoute('type');
+            return $this->redirectToRoute('detail_type', ['id' => $id]);
         }
 
         return $this->render('Assets/editType.html.twig', [
@@ -757,7 +785,7 @@ class AssetController extends AbstractController
             $workplaces->setWorkplace($form->get('workplace')->getData());
 
             $this->em->flush();
-            return $this->redirectToRoute('workplace');
+            return $this->redirectToRoute('detail_workplace', ['id' => $id]);
         }
 
         return $this->render('Assets/editWorkplace.html.twig', [

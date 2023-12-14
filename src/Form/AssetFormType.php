@@ -117,14 +117,6 @@ class AssetFormType extends AbstractType
             ->add('assetType', EntityType::class, [
                 'class' => AssetType::class,
                 'choice_label' => 'type',
-//                'row_attr' => array(
-//                    'class'=> 'w-2.5 h-2.5 ms-3',
-//                    'aria-hidden' => true,
-//                    'xmlns' => 'http://www.w3.org/2000/svg',
-//                    'fill' => 'none',
-//                    'viewBox' => '0 0 10 6'
-//
-//                ),
                 'choice_value' => 'id',
                 'attr' => array(
                     'class' => 'input-with-icon h-8 block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray',
@@ -232,9 +224,12 @@ class AssetFormType extends AbstractType
             ->add('dateCreated', DateType::class, [
                 'attr' => array(
                     'class' => 'block mt-1 w-56 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
-                ),
+               ),
                 'label' => 'Datum vytvoření *',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
+                'required' => false,
+                'data' => new \DateTime(),
             ])
             ->add('dateBought', DateType::class, [
                 'attr' => array(
@@ -243,6 +238,7 @@ class AssetFormType extends AbstractType
                 'required' => false,
                 'label' => 'Datum zakoupení',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
             ])
             ->add('dateReceived', DateType::class, [
                 'attr' => array(
@@ -251,6 +247,7 @@ class AssetFormType extends AbstractType
                 'required' => false,
                 'label' => 'Datum obdržení',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
             ])
             ->add('subsumptionDate', DateType::class, [
                 'attr' => array(
@@ -259,6 +256,7 @@ class AssetFormType extends AbstractType
                 ),
                 'label' => 'Datum zařazení',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('eliminationDate', DateType::class, [
@@ -267,6 +265,7 @@ class AssetFormType extends AbstractType
                 ),
                 'label' => 'Datum vyřazení',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('nextServiceDue', DateType::class, [
@@ -276,6 +275,7 @@ class AssetFormType extends AbstractType
                 'required' => false,
                 'label' => 'Příští servis',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+                'widget' => 'single_text',
             ])
             ->add('serviceInterval', TextareaType::class, [
                 'attr' => array(
@@ -295,7 +295,17 @@ class AssetFormType extends AbstractType
 //                'label' => 'Dokumenty',
 //                'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
 //            ))
-            ->add('documentPaths', FileType::class, array(
+//            ->add('documentPaths', FileType::class, array(
+//                'attr' => array(
+//                    'class' => 'px-3 py-3 w-56 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
+//                ),
+//                'required' => false,
+//                'mapped' => false,
+//                'label' => 'Dokumenty',
+//                'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
+//                'multiple' => true,
+//            ))
+            ->add('files', FileType::class, array(
                 'attr' => array(
                     'class' => 'px-3 py-3 w-56 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
                 ),

@@ -150,6 +150,27 @@
             <br><br>
             <main class="h-full overflow-y-auto">
                 <div class="container px-6 mx-auto grid">
+
+                    <ul>
+                        <li class="inline-block">
+                            <a href="{{ path('user') }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Uživatelé</a>
+                        </li>
+                        <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                            >
+                        </li>
+                        <li class="inline-block">
+                                <a href="/userDetails/{{ users.id }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Detaily {{ users.name }}</a>
+                        </li>
+                        <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                            >
+                        </li>
+                        <li class="inline-block">
+                            <b>
+                                <a href="/editUser/{{ users.id }}" class="text-m text-purple-600 dark:text-purple-400 underline"> Editovat {{ users.name }}</a>
+                            </b>
+                        </li>
+                    </ul>
+
                     <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                         Editovat uživatele <a href="/userDetails/{{ users.id }}" class="hover:underline"> {{ users.name }} </a>
                     </h2>

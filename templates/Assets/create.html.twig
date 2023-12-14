@@ -228,14 +228,17 @@
 {#                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">#}
 {#                                            {{ form_row(form.documentPath) }}#}
 {#                                        </h4>#}
+{#                                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">#}
+{#                                            {{ form_row(form.documentPaths) }}#}
+{#                                        </h4>#}
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                                            {{ form_row(form.documentPaths) }}
+                                            {{ form_row(form.files) }}
                                         </h4>
                                     </div>
                                 </div>
                                 <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
                                     <div class="grid gap-6 mb-8 md:grid-cols-2">
-                                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
+                                    <h4 class="mb-4 font-semibold text-gray-800">
                                         {{ form_row(form.dateCreated) }}
                                     </h4>
                                     <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">

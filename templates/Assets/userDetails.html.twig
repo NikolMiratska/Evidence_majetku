@@ -151,9 +151,27 @@
                 <div class="container px-6 mx-auto grid">
                     <br><br>
                     <main class="h-full overflow-y-auto">
+
+                            <ul>
+                                <li class="inline-block">
+                                    <a href="{{ path('user') }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Uživatelé</a>
+                                </li>
+                                <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                                    >
+                                </li>
+                                <li class="inline-block">
+                                    <b>
+                                    <a href="/userDetails/{{ users.id }}" class="text-m text-purple-600 dark:text-purple-400 underline">Detaily {{ users.name }}</a>
+                                    </b>
+                                </li>
+                            </ul>
+
                         <div class="container px-6 mx-auto grid">
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                                Detaily uživatele {{ users.email }}
+                                Detaily uživatele {{ users.name }}
+                                {% if users.email %}
+                                | {{ users.email }}
+                                {% endif %}
                                 <hr class="my-2 border-purple-400" />
 
                                 <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">

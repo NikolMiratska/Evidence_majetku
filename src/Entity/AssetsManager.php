@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AssetsManagerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -122,6 +124,14 @@ class AssetsManager
 
     #[ORM\Column(nullable: true)]
     private ?int $numberField = null;
+
+    #[ORM\OneToMany(mappedBy: 'filenames', targetEntity: Files::class)]
+    private Collection $files;
+
+    public function __construct()
+    {
+        $this->files = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -532,6 +542,36 @@ class AssetsManager
     public function setNumberField(?int $numberField): static
     {
         $this->numberField = $numberField;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Files>
+     */
+    public function getFiles(): Collection
+    {
+        return $this->files;
+    }
+
+    public function addFile(Files $file): static
+    {
+        if (!$this->files->contains($file)) {
+            $this->files->add($file);
+            $file->setFilenames($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFile(Files $file): static
+    {
+        if ($this->files->removeElement($file)) {
+            // set the owning side to null (unless already changed)
+            if ($file->getFilenames() === $this) {
+                $file->setFilenames(null);
+            }
+        }
 
         return $this;
     }

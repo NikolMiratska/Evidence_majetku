@@ -152,6 +152,19 @@
                     <br><br>
                     <main class="h-full overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
+                            <ul>
+                                <li class="inline-block">
+                                    <a href="{{ path('workplace') }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Pracoviště</a>
+                                </li>
+                                <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                                    >
+                                </li>
+                                <li class="inline-block">
+                                    <b>
+                                    <a href="/workplaceDetails/{{ workplaces.id }}" class="text-m text-purple-600 dark:text-purple-400 underline">Detaily {{ workplaces.workplace }}</a>
+                                    </b>
+                                </li>
+                            </ul>
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 Detaily pracoviště {{ workplaces.workplace }}
                                 <hr class="my-2 border-purple-400" />

@@ -169,6 +169,27 @@
                     <br><br>
                     <main class="h-full overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
+
+                            <ul>
+                                <li class="inline-block">
+                                    <a href="{{ path('list') }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Seznam majetku</a>
+                                </li>
+                                <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                                    >
+                                </li>
+                                <li class="inline-block">
+                                    <a href="/details/{{ assets.id }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Detaily {{ assets.name }}</a>
+                                </li>
+                                <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                                    >
+                                </li>
+                                <li class="inline-block">
+                                    <b>
+                                        <a href="/edit/{{ assets.id }}" class="text-m text-purple-600 dark:text-purple-400 underline"> Editovat {{ assets.name }}</a>
+                                    </b>
+                                </li>
+                            </ul>
+
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 Editovat majetek <a href="/details/{{ assets.id }}" class="hover:underline">{{ assets.name }}</a>
                             </h2>
@@ -245,7 +266,7 @@
                                             {{ form_row(form.workplaceAsset) }}
                                         </h4>
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                                            {{ form_row(form.documentPath) }}
+                                            {{ form_row(form.files) }}
                                         </h4>
                                     </div>
                                 </div>

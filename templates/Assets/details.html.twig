@@ -152,6 +152,21 @@
                     <br><br>
                     <main class="h-full overflow-y-auto">
                         <div class="container px-6 mx-auto grid">
+
+                            <ul>
+                                <li class="inline-block">
+                                    <a href="{{ path('list') }}" class="text-m text-gray-600 dark:text-gray-400 hover:underline">Seznam majetku</a>
+                                </li>
+                                <li class="inline-block text-m text-gray-600 dark:text-gray-400 hover:underline">
+                                    >
+                                </li>
+                                <li class="inline-block">
+                                    <b>
+                                    <a href="/details/{{ assets.id }}" class="text-m text-purple-600 dark:text-purple-400 underline">Detaily {{ assets.name }}</a>
+                                    </b>
+                                </li>
+                            </ul>
+
                             <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
                                 Detaily majetku {{ assets.name }}
                                 <hr class="my-2 border-purple-400" />
@@ -239,29 +254,27 @@
                             </div>
 
                             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
-                                <b class="text-red-700">Dates TODO</b>
-{#                                TODO date to string#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Datum vytvoření:</b> {{ assets.dateCreated }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400" id="demo">#}
-{#                                    <b>Datum zařazení:</b> {{ assets.subsumptionDate }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Datum vyřazení:</b> {{ assets.eliminationDate }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Datum zakoupení:</b> {{ assets.dateBought }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Datum obdržení:</b> {{ assets.dateReceived }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Příští servis:</b> {{ assets.nextServiceDue }}#}
-{#                                </p>#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b>Servisní interval:</b> {{ assets.serviceInterval }}#}
-{#                                </p>#}
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Datum vytvoření:</b>{%  if assets.dateCreated %} {{ assets.dateCreated | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400" id="demo">
+                                    <b class="text-purple-400">Datum zařazení:</b>{% if assets.subsumptionDate %}{{ assets.subsumptionDate | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Datum vyřazení:</b>{% if assets.eliminationDate %} {{ assets.eliminationDate | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Datum zakoupení:</b>{% if assets.dateBought %} {{ assets.dateBought | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Datum obdržení:</b>{% if assets.dateReceived %} {{ assets.dateReceived | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Příští servis:</b>{% if assets.nextServiceDue %} {{ assets.nextServiceDue | date('d.m.Y') }} {% endif %}
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Servisní interval:</b> {{ assets.serviceInterval }}
+                                </p>
                             </div>
 
                             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">

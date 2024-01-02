@@ -125,7 +125,7 @@ class AssetsManager
     #[ORM\Column(nullable: true)]
     private ?int $numberField = null;
 
-    #[ORM\OneToMany(mappedBy: 'filenames', targetEntity: Files::class)]
+    #[ORM\OneToMany(mappedBy: 'filenames', targetEntity: Files::class, cascade: ['persist'])]
     private Collection $files;
 
     public function __construct()
@@ -575,4 +575,8 @@ class AssetsManager
 
         return $this;
     }
+//    public function __toString()
+//    {
+//        return (string) $this->getFiles();
+//    }
     }

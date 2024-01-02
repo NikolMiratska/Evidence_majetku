@@ -26,6 +26,7 @@ use App\Repository\AssetsLocationRepository;
 use App\Repository\AssetsManagerRepository;
 use App\Repository\AssetsWorkplaceRepository;
 use App\Repository\AssetTypeRepository;
+use App\Repository\FilesRepository;
 use App\Repository\UserRepository;
 use App\Service\CategoryGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,7 +50,8 @@ class AssetController extends AbstractController
     private $assetsCategoryRepository;
     private $assetsLocationRepository;
     private $assetsWorkplaceRepository;
-    public function __construct(AssetsManagerRepository $assetsManagerRepository, EntityManagerInterface $em, UserRepository $userRepository, AssetTypeRepository $assetTypeRepository, AssetsCategoryRepository $assetsCategoryRepository, AssetsLocationRepository $assetsLocationRepository, AssetsWorkplaceRepository $assetsWorkplaceRepository)
+    private $filesRepository;
+    public function __construct(AssetsManagerRepository $assetsManagerRepository, EntityManagerInterface $em, UserRepository $userRepository, AssetTypeRepository $assetTypeRepository, AssetsCategoryRepository $assetsCategoryRepository, AssetsLocationRepository $assetsLocationRepository, AssetsWorkplaceRepository $assetsWorkplaceRepository, FilesRepository $filesRepository)
     {
         $this->assetsManagerRepository = $assetsManagerRepository;
         $this->em = $em;
@@ -58,6 +60,7 @@ class AssetController extends AbstractController
         $this->assetsCategoryRepository = $assetsCategoryRepository;
         $this->assetsLocationRepository = $assetsLocationRepository;
         $this->assetsWorkplaceRepository = $assetsWorkplaceRepository;
+        $this->filesRepository = $filesRepository;
     }
     #[Route('/')]
     public function homepage(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
@@ -157,6 +160,22 @@ class AssetController extends AbstractController
                 $newAsset->addFile($fileEntity);
             }}
 
+            $documentPath = $form->get('documentPath')->getData();
+            if ($documentPath) {
+                $newFileName = uniqid() . '.' . $documentPath->guessExtension();
+
+                try {
+                    $documentPath->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets',
+                        $newFileName
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $newAsset->setDocumentPath('/assets/' . $newFileName);
+            }
+
 //            $this->em->persist($documentPaths);
             $this->em->persist($newAsset);
             $this->em->flush();
@@ -170,7 +189,6 @@ class AssetController extends AbstractController
 
     }
 
-    // Your controller action to show the confirmation page
     #[Route('/confirmDelete/{id}')]
     public function confirmDeleteAction(AssetsCategory $category, Request $request): Response
     {
@@ -214,6 +232,8 @@ class AssetController extends AbstractController
 
         $categories = $this->assetsManagerRepository->find($id);
 
+//        $files = $this->filesRepository->find($id);
+
         if (!$categories) {
             throw $this->createNotFoundException('Product not found');
         }
@@ -221,21 +241,53 @@ class AssetController extends AbstractController
         $categoryName = $categories->getCategory();
         $category = $categoryGenerator->generateCategory($categoryName);
 
+// Generate an image with asset details
+        $image = $this->generateAssetImage($assets);
+
 
         return $this->render('Assets/details.html.twig',
             [
                 'assets' => $assets,
                 'category' => $category,
+//                'files' => $files,
+                'image' => $image,
             ]);
+    }
+
+    private function generateAssetImage($asset)
+    {
+        // Use GD library to create an image with asset details
+        $width = 300;
+        $height = 200;
+        $image = imagecreatetruecolor($width, $height);
+        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
+        $textColor = imagecolorallocate($image, 0, 0, 0);
+
+        // Customize the text content based on your asset properties
+        $text = "Asset Name: " . $asset->getName() . "\nPrice: $" . $asset->getPrice();
+
+        // Add text to the image
+        imagestring($image, 5, 10, 10, $text, $textColor);
+
+        // Save or output the image based on your needs
+        // Save the image to a file
+        $imagePath = '/path/to/save/image.png';
+        imagepng($image, $imagePath);
+        imagedestroy($image);
+
+        return $imagePath; // Return the path to the generated image
     }
     #[Route('/userDetails/{id}', name: 'detail_user')]
     public function userDetail($id, Request $request): Response
     {
         $users = $this->userRepository->find($id);
 
+        $assignedAssets = $users->getIsOwnedBy();
+
         return $this->render('Assets/userDetails.html.twig',
             [
-                'users' => $users
+                'users' => $users,
+                'assignedAssets' => $assignedAssets,
             ]);
     }
 
@@ -244,9 +296,12 @@ class AssetController extends AbstractController
     {
         $categories = $this->assetsCategoryRepository->find($id);
 
+        $assigned = $categories->getCategories();
+
         return $this->render('Assets/categoryDetails.html.twig',
             [
-                'categories' => $categories
+                'categories' => $categories,
+                'assigned' => $assigned,
             ]);
     }
 
@@ -255,9 +310,12 @@ class AssetController extends AbstractController
     {
         $locations = $this->assetsLocationRepository->find($id);
 
+        $assigned = $locations->getLocations();
+
         return $this->render('Assets/locationDetails.html.twig',
             [
-                'locations' => $locations
+                'locations' => $locations,
+                'assigned' => $assigned,
             ]);
     }
 
@@ -266,9 +324,12 @@ class AssetController extends AbstractController
     {
         $types = $this->assetTypeRepository->find($id);
 
+        $assigned = $types->getTypes();
+
         return $this->render('Assets/typeDetails.html.twig',
             [
-                'types' => $types
+                'types' => $types,
+                'assigned' => $assigned,
             ]);
     }
 
@@ -277,9 +338,12 @@ class AssetController extends AbstractController
     {
         $workplaces = $this->assetsWorkplaceRepository->find($id);
 
+        $assigned = $workplaces->getWorkplaces();
+
         return $this->render('Assets/workplaceDetails.html.twig',
             [
-                'workplaces' => $workplaces
+                'workplaces' => $workplaces,
+                'assigned' => $assigned,
             ]);
     }
 
@@ -293,6 +357,23 @@ class AssetController extends AbstractController
         $documentPath = $form->get('files')->getData();
 
         if ($form->isSubmitted() && $form->isValid()){
+            $newAsset = $form->getData();
+            $profilePic = $form->get('documentPath')->getData();
+            if ($profilePic) {
+                $newFileName = uniqid() . '.' . $profilePic->guessExtension();
+
+                try {
+                    $profilePic->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets',
+                        $newFileName
+                    );
+                } catch (FileException $e) {
+                    return new Response($e->getMessage());
+                }
+
+                $newAsset->setDocumentPath('/assets/' . $newFileName);
+            }
+
             if ($documentPath){
                 if ($assets->getDocumentPath() !== null) {
                     if (file_exists(
@@ -315,7 +396,11 @@ class AssetController extends AbstractController
                         $this->em->flush();
                         return $this->redirectToRoute('detail_asset', ['id' => $id]);
                     }
-                }
+                }}
+
+
+
+
 //            if ($documentPath){
 //                $documentPaths = $form->get('documentPaths')->getData();
 //
@@ -338,7 +423,7 @@ class AssetController extends AbstractController
 //                        return $this->redirectToRoute('list');
 //                    }
 //                }
-            } else {
+
                 $assets->setName($form->get('name')->getData());
                 $assets->setInventoryNumber($form->get('inventoryNumber')->getData());
                 $assets->setDescription($form->get('description')->getData());
@@ -346,7 +431,7 @@ class AssetController extends AbstractController
                 $assets->setSupplier($form->get('supplier')->getData());
                 $assets->setManufacturer($form->get('manufacturer')->getData());
                 $assets->setGuaranteePeriod($form->get('guaranteePeriod')->getData());
-                $assets->setAssetType($form->get('assetType')->getData());
+                $assets->setAssetType($form->get('typeAsset')->getData());
                 $assets->setSubsumptionDate($form->get('subsumptionDate')->getData());
                 $assets->setEliminationDate($form->get('eliminationDate')->getData());
                 $assets->setAssetLocation($form->get('locationAsset')->getData());
@@ -368,7 +453,7 @@ class AssetController extends AbstractController
                 $this->em->flush();
                 return $this->redirectToRoute('detail_asset', ['id' => $id]);
             }
-        }
+
 
         return $this->render('Assets/edit.html.twig', [
            'assets' => $assets,
@@ -815,38 +900,67 @@ class AssetController extends AbstractController
             }
     }
 
-    #[Route('deleteFile/{id}/{filename}', name: 'deleteFile')]
-    public function deleteFile($id, $filename): Response
+    #[Route('deleteFile/{id}', name: 'deleteFile')]
+    public function deleteFile($id): Response
     {
-        $assets = $this->assetsManagerRepository->find($id);
+//        $assets = $this->assetsManagerRepository->find($id);
+//
+//        if (!$assets) {
+//            throw $this->createNotFoundException('Asset not found');
+//        }
+//
+//        if (!in_array('/uploads/' . $filename, $assets->getDocumentPaths())) {
+//            throw $this->createNotFoundException('File not found');
+//        }
+//
+//        $filePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $filename;
+//
+//        if (!file_exists($filePath)) {
+//            throw $this->createNotFoundException('File not found');
+//        }
+//
+//        try {
+//            unlink($filePath);
+//        } catch (\Exception $e) {
+//            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+//        }
+//
+//        // Remove the filename from the entity's documentPaths array
+//        $assets->removeDocumentPath('/uploads/' . $filename);
+//
+//        // Update the entity in the database
+//        $this->em->flush();
 
-        if (!$assets) {
-            throw $this->createNotFoundException('Asset not found');
-        }
+        $file = $this->filesRepository->find($id);
 
-        if (!in_array('/uploads/' . $filename, $assets->getDocumentPaths())) {
+        if (!$file) {
             throw $this->createNotFoundException('File not found');
         }
-
-        $filePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $filename;
-
-        if (!file_exists($filePath)) {
-            throw $this->createNotFoundException('File not found');
+        foreach ($file as $files) {
+            $this->em->remove($files);
         }
-
-        try {
-            unlink($filePath);
-        } catch (\Exception $e) {
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        // Remove the filename from the entity's documentPaths array
-        $assets->removeDocumentPath('/uploads/' . $filename);
-
-        // Update the entity in the database
+//        $this->em->remove($file);
         $this->em->flush();
 
-        return $this->redirectToRoute('edit_asset', ['id' => $id]);
+//        $assets = $this->assetsManagerRepository->find($id);
+//
+//        if (!$assets) {
+//            throw $this->createNotFoundException('Asset not found');
+//        }
+//
+//        // Assuming a OneToMany association between AssetsManager and File entities
+//        $files = $assets->getFiles();
+//
+////        $entityManager = $this->getDoctrine()->getManager();
+//
+//        foreach ($files as $file) {
+//            $this->em->remove($file);
+//        }
+//
+//        $this->em->flush();
+
+
+        return $this->redirectToRoute('detail_asset', ['id' => $id]);
     }
 
     #[Route('/search', name: 'search')]

@@ -52,7 +52,7 @@ class AssetFormType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'attr' => array(
-                    'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class' => 'block mt-1 p-2.5 w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'rows' => '4',
                 ),
                 'label' => 'Popis',
@@ -114,7 +114,7 @@ class AssetFormType extends AbstractType
                 'label' => 'Záruční doba (roky) *',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
             ])
-            ->add('assetType', EntityType::class, [
+            ->add('typeAsset', EntityType::class, [
                 'class' => AssetType::class,
                 'choice_label' => 'type',
                 'choice_value' => 'id',
@@ -159,7 +159,7 @@ class AssetFormType extends AbstractType
             ])
             ->add('note', TextareaType::class, [
                 'attr' => array(
-                    'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class' => 'block mt-1 p-2.5 w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'rows' => '4',
                 ),
                 'label' => 'Poznámky',
@@ -214,7 +214,7 @@ class AssetFormType extends AbstractType
             ])
             ->add('complaint', TextareaType::class, [
                 'attr' => array(
-                    'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class' => 'block mt-1 p-2.5 w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'rows' => '4',
                 ),
                 'label' => 'Reklamace',
@@ -279,7 +279,7 @@ class AssetFormType extends AbstractType
             ])
             ->add('serviceInterval', TextareaType::class, [
                 'attr' => array(
-                    'class' => 'block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+                    'class' => 'block mt-1 p-2.5 w-full text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input',
                     'rows' => '4',
                 ),
                 'label' => 'Servisní interval',
@@ -314,6 +314,15 @@ class AssetFormType extends AbstractType
                 'label' => 'Dokumenty',
                 'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl'],
                 'multiple' => true,
+            ))
+            ->add('documentPath', FileType::class, array(
+                'attr' => array(
+                    'class' => 'px-3 py-3 w-56 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple'
+                ),
+                'required' => false,
+                'mapped' => false,
+                'label' => 'Fotografie majetku',
+                'label_attr' => ['class' => 'text-gray-700 dark:text-gray-400 block text-xl']
             ))
         ;
     }

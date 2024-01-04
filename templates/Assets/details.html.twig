@@ -172,7 +172,7 @@
                                             </button>
                                         </a>
 
-                                        <a href="/delete/{{ assets.id }}">
+                                        <a href="#" onclick="openCustomConfirmationModal('{{ assets.name|upper }}')">
                                             <button class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="none" viewBox="0 0 20 20" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor">
                                                     <path d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
@@ -180,6 +180,13 @@
                                                 </svg>
                                             </button>
                                         </a>
+                                        <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border border-purple-400 text-xl" id="customConfirmationModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); ">
+                                            <h5 class="text-red-700">Upozornění!</h5>
+                                            <p>Opravdu chcete majetek {{ assets.name|upper }} smazat?</p>
+                                            <br>
+                                            <a href="/delete/{{ assets.id }}" class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">Ano, smazat</a>
+                                            <button onclick="closeCustomConfirmationModal()" class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">Zrušit</button>
+                                        </div>
                                     </div>
                                 </span>
                             </h2>
@@ -198,7 +205,7 @@
                                     <b class="text-purple-400">Záruka v letech:</b> {{ assets.guaranteePeriod }}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-purple-400">Typ:</b> {% if assets.typeAsset %} <a href="/typeDetails/{{ assets.typeAsset.id }}"> {{ assets.assetType }} </a> {% endif %}
+                                    <b class="text-purple-400">Typ:</b> {% if assets.typeAsset %} <a href="/typeDetails/{{ assets.typeAsset.id }}"> {{ assets.typeAsset }} </a> {% endif %}
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Umístění:</b> {% if assets.locationAsset %} <a href="/locationDetails/{{ assets.locationAsset.id }}"> {{ assets.locationAsset }} </a>{% endif %}
@@ -215,11 +222,19 @@
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Kategorie:</b> {% if assets.categoryAsset %} <a href="/categoryDetails/{{ assets.categoryAsset.id }}"> Redbit-{{ category }} </a>{% endif %}
                                 </p>
-                                <p class="text-m text-gray-600 dark:text-gray-400">
-                                    <b class="text-red-700">OLDKategorie:</b> Redbit-{{ assets.categoryAsset }}
-                                </p>
+{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
+{#                                    <b class="text-red-700">OLDKategorie:</b> Redbit-{{ assets.categoryAsset }}#}
+{#                                </p>#}
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Pracoviště:</b> {% if assets.workplaceAsset %} <a href="/workplaceDetails/{{ assets.workplaceAsset.id }}"> {{ assets.workplaceAsset }} </a>{% endif %}
+                                </p>
+{#                                <img src="{{ qrCode.dataUri }}" alt="QR Code">#}
+{#                                <img src="{{ qrCode.data }}" alt="QR Code">#}
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">QR Code:</b> <img src="{{ qrCode }}" alt="QR Code">
+                                </p>
+                                <p class="text-m text-gray-600 dark:text-gray-400">
+                                    <b class="text-purple-400">Karta:</b> <img src="{{ image }}" alt="Asset Image">
                                 </p>
                             </div>
 
@@ -302,6 +317,15 @@
             </main>
         </div>
     </div>
+    <script>
+        function openCustomConfirmationModal(assetName) {
+            document.getElementById('customConfirmationModal').style.display = 'block';
+        }
+
+        function closeCustomConfirmationModal() {
+            document.getElementById('customConfirmationModal').style.display = 'none';
+        }
+    </script>
 {% endblock %}
 
 

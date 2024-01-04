@@ -174,8 +174,8 @@
                                                 </svg>
                                             </button>
                                         </a>
-
-                                       <a href="/deleteUser/{{ users.id }}">
+                                        {% if assignedAssets is not empty %}
+                                            <a href="#" onclick="openCustomConfirmationModal('{% for asset in assignedAssets %} {{ asset.name|upper }} {% endfor %}')">
                                             <button class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">
                                                 <svg class="w-5 h-5" aria-hidden="true" fill="none" viewBox="0 0 20 20" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor">
                                                     <path d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
@@ -183,6 +183,35 @@
                                                 </svg>
                                             </button>
                                         </a>
+                                        {% else %}
+                                            <a href="#" onclick="openCustomConfirmationModal2('{% for asset in assignedAssets %} {{ asset.name|upper }} {% endfor %}')">
+                                            <button class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">
+                                                <svg class="w-5 h-5" aria-hidden="true" fill="none" viewBox="0 0 20 20" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor">
+                                                    <path d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z"
+                                                    ></path>
+                                                </svg>
+                                            </button>
+                                        </a>
+                                        {% endif %}
+
+                                        <!-- Confirmation Modal -->
+                                        <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border border-purple-400 text-xl" id="customConfirmationModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); ">
+                                            <h5 class="text-red-700">Chyba!</h5>
+                                            <p>Uživatel je přiřazen k následujícím majetkům: <br>
+                                                {% for asset in assignedAssets %} <a href="/details/{{ asset.id }}" class="hover:underline"> {{ asset.name|upper }}</a> <br> {% endfor %}
+                                            </p>
+                                            <p>Uživatele nelze smazat.</p>
+                                            <br>
+                                            <button onclick="closeCustomConfirmationModal()" class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">Zrušit</button>
+                                        </div>
+
+                                        <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800 border border-purple-400 text-xl" id="customConfirmationModal2" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); ">
+                                            <h5 class="text-red-700">Upozornění!</h5>
+                                            <p>Opravdu chcete živatele {{ users.name|upper }} smazat?</p>
+                                            <br>
+                                            <a href="/deleteUser/{{ users.id }}" class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">Ano, smazat</a>
+                                            <button onclick="closeCustomConfirmationModal2()" class="items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" aria-label="Delete">Zrušit</button>
+                                        </div>
                                     </div>
                                 </span>
                             </h2>
@@ -259,12 +288,65 @@
                                         </tbody>
                             </table>
                             <br>
+                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                                Historie uživatele {{ users.name }}
+                            </h2>
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                    <th class="px-4 py-3">Akce</th>
+                                    <th class="px-4 py-3">Majetek</th>
+                                    <th class="px-4 py-3">Čas</th>
+                                </tr>
+                                </thead>
+
+                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                {% for entry in histories %}
+                                    <tr class="text-gray-700 dark:text-gray-400">
+                                        <td class="px-4 py-3 text-sm">
+                                            {{ entry.action }}
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <div class="flex items-center text-sm">
+                                                <div>
+                                                    <a href="/details/{{ asset.id }}">
+                                                        <p class="font-semibold hover:underline">{{ entry.asset.name }}</p>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm">
+                                            {{ entry.timestamp|date('Y-m-d H:i:s') }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <br>
                         </div>
                     </main>
                 </div>
             </main>
         </div>
     </div>
+    <script>
+        function openCustomConfirmationModal(assetName) {
+            document.getElementById('customConfirmationModal').style.display = 'block';
+        }
+
+        function openCustomConfirmationModal2(assetName) {
+            document.getElementById('customConfirmationModal2').style.display = 'block';
+        }
+
+        function closeCustomConfirmationModal() {
+            document.getElementById('customConfirmationModal').style.display = 'none';
+        }
+
+        function closeCustomConfirmationModal2() {
+            document.getElementById('customConfirmationModal2').style.display = 'none';
+        }
+    </script>
 {% endblock %}
 
 

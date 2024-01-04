@@ -41,9 +41,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profilePic = null;
 
+    #[ORM\OneToMany(mappedBy: 'userName', targetEntity: UserHistory::class, cascade: ['persist'])]
+    private Collection $history;
+
     public function __construct()
     {
         $this->isOwnedBy = new ArrayCollection();
+        $this->history = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -170,6 +174,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfilePic(?string $profilePic): static
     {
         $this->profilePic = $profilePic;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserHistory>
+     */
+    public function getHistory(): Collection
+    {
+        return $this->history;
+    }
+
+    public function addHistory(UserHistory $history): static
+    {
+        if (!$this->history->contains($history)) {
+            $this->history->add($history);
+            $history->setUserName($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistory(UserHistory $history): static
+    {
+        if ($this->history->removeElement($history)) {
+            // set the owning side to null (unless already changed)
+            if ($history->getUserName() === $this) {
+                $history->setUserName(null);
+            }
+        }
 
         return $this;
     }

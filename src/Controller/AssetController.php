@@ -9,6 +9,7 @@ use App\Entity\AssetsWorkplace;
 use App\Entity\AssetType;
 use App\Entity\Files;
 use App\Entity\User;
+use App\Entity\UserHistory;
 use App\Form\AssetFormType;
 use App\Form\CategoryFormType;
 use App\Form\EditCategoryFormType;
@@ -30,6 +31,7 @@ use App\Repository\FilesRepository;
 use App\Repository\UserRepository;
 use App\Service\CategoryGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Endroid\QrCode\QrCode;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -39,6 +41,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use function Symfony\Component\String\u;
 
 class AssetController extends AbstractController
@@ -176,6 +179,14 @@ class AssetController extends AbstractController
                 $newAsset->setDocumentPath('/assets/' . $newFileName);
             }
 
+            $history = new UserHistory();
+            $history->setAction('Assigned asset');
+            $history->setAsset($asset);
+            $history->setTimestamp(new \DateTime());
+            $newAsset->addHistory($history);
+
+//            $entityManager->persist($user);
+//            $entityManager->flush();
 //            $this->em->persist($documentPaths);
             $this->em->persist($newAsset);
             $this->em->flush();
@@ -189,28 +200,11 @@ class AssetController extends AbstractController
 
     }
 
-    #[Route('/confirmDelete/{id}')]
-    public function confirmDeleteAction(AssetsCategory $category, Request $request): Response
-    {
-        $entityManager = $this->getDoctrine()->getManager();
-
-//        $category = $this->assetsCategoryRepository->find($id);
-
-        $associatedAssets = $entityManager
-            ->getRepository(AssetsManager::class)
-            ->findBy(['AssetsCategory' => $category]);
-
-        return $this->render('Assets/confirmDelete.html.twig', [
-            'category' => $category,
-            'associatedAssets' => $associatedAssets,
-        ]);
-    }
-
 
     #[Route('/list', name: 'list')]
     public function assetList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
     {
-        $dql   = "SELECT a FROM App\Entity\AssetsManager a";
+        $dql = "SELECT a FROM App\Entity\AssetsManager a";
         $query = $em->createQuery($dql);
 
         $pagination = $paginator->paginate(
@@ -241,8 +235,28 @@ class AssetController extends AbstractController
         $categoryName = $categories->getCategory();
         $category = $categoryGenerator->generateCategory($categoryName);
 
-// Generate an image with asset details
-        $image = $this->generateAssetImage($assets);
+
+        // Generate a QR code containing the asset details page URL
+        $qrCode = new QrCode($this->generateUrl('detail_asset', ['id' => $id], UrlGeneratorInterface::ABSOLUTE_URL));
+        $qrCode->setSize(100); // Adjust the QR code size as needed
+
+        // Generate an image with asset details and overlay the QR code
+//        $image = $this->generateAssetImage($assets, $qrCode);
+////
+//
+//
+//
+//        // Get the QR code as a string
+//        $qrCodeString = $qrCode->writeString();
+//
+//        // Generate an image with asset details and overlay the QR code
+//        $image = $this->generateAssetImage($assets, $qrCodeString);
+        // Get the QR code as a data URI
+        $qrCodeDataUri = $qrCode->getData();
+
+//        $qrCodeDataUri = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
+
+        $imagePath = $this->generateAssetImage($assets);
 
 
         return $this->render('Assets/details.html.twig',
@@ -250,11 +264,12 @@ class AssetController extends AbstractController
                 'assets' => $assets,
                 'category' => $category,
 //                'files' => $files,
-                'image' => $image,
+                'image' => $imagePath,
+                'qrCode' => $qrCodeDataUri,
             ]);
     }
 
-    private function generateAssetImage($asset)
+    private function generateAssetImage($assets)
     {
         // Use GD library to create an image with asset details
         $width = 300;
@@ -264,19 +279,77 @@ class AssetController extends AbstractController
         $textColor = imagecolorallocate($image, 0, 0, 0);
 
         // Customize the text content based on your asset properties
-        $text = "Asset Name: " . $asset->getName() . "\nPrice: $" . $asset->getPrice();
+        $text = "Asset Name: " . $assets->getName() . "\nPrice: $" . $assets->getUnitPrice();
 
         // Add text to the image
         imagestring($image, 5, 10, 10, $text, $textColor);
 
         // Save or output the image based on your needs
         // Save the image to a file
-        $imagePath = '/path/to/save/image.png';
+//        $imagePath = '/public/assets/image.png';
+//        imagepng($image, $imagePath);
+//        imagedestroy($image);
+
+        $directory = '/public/generatedImage/';
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true); // Create the directory recursively
+        }
+
+// Save the image to a file
+        $imagePath = $directory . 'image.png';
         imagepng($image, $imagePath);
+
+// Free up memory from the image resource
         imagedestroy($image);
+
 
         return $imagePath; // Return the path to the generated image
     }
+
+//    private function getQrCodeString(QrCode $qrCode): string
+//    {
+//        // Use the ResultWriter to get the QR code as a string
+//        $resultWriter = new \Endroid\QrCode\Writer\Result\ResultWriter();
+//        $qrCodeString = $resultWriter->write($qrCode, 'data-url');
+//
+//        return $qrCodeString;
+//    }
+
+//    private function generateAssetImage($assets, QrCode $qrCode)
+//    {
+//        // Use GD library to create an image with asset details
+//        $width = 300;
+//        $height = 200;
+//        $image = imagecreatetruecolor($width, $height);
+//        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
+//        $textColor = imagecolorallocate($image, 0, 0, 0);
+//
+//        // Customize the text content based on your asset properties
+//        $text = "Asset Name: " . $assets->getName() . "\nPrice: $" . $assets->getPrice();
+//
+//        // Add text to the image
+//        imagestring($image, 5, 10, 10, $text, $textColor);
+//
+//        // Save or output the image based on your needs
+//        // Save the image to a file
+//        $imagePath = '/public/generatedImage/image.png';
+//        imagepng($image, $imagePath);
+//        imagedestroy($image);
+//
+//
+//        // ... Your image generation logic ...
+//
+//        // Create an image resource with the QR code
+//        $qrCodeImage = imagecreatefromstring($qrCode->writeString());
+//
+//        // Merge the QR code image onto the main image
+//        imagecopymerge($image, $qrCodeImage, 10, 10, 0, 0, imagesx($qrCodeImage), imagesy($qrCodeImage), 50);
+//
+//        // Save or output the image with the QR code
+//        // ...
+//
+//        return $imagePath; // Return the path to the generated image
+//    }
     #[Route('/userDetails/{id}', name: 'detail_user')]
     public function userDetail($id, Request $request): Response
     {
@@ -284,10 +357,15 @@ class AssetController extends AbstractController
 
         $assignedAssets = $users->getIsOwnedBy();
 
+        $histories = $users->getHistory();
+
+//        dd($histories);
+
         return $this->render('Assets/userDetails.html.twig',
             [
                 'users' => $users,
                 'assignedAssets' => $assignedAssets,
+                'histories' => $histories,
             ]);
     }
 
@@ -449,6 +527,12 @@ class AssetController extends AbstractController
                 $assets->setDateReceived($form->get('dateReceived')->getData());
                 $assets->setNextServiceDue($form->get('nextServiceDue')->getData());
                 $assets->setServiceInterval($form->get('serviceInterval')->getData());
+
+            $history = new UserHistory();
+            $history->setAction('Assigned asset');
+            $history->setAsset($assets);
+            $history->setTimestamp(new \DateTime());
+            $newAsset->addHistory($history);
 
                 $this->em->flush();
                 return $this->redirectToRoute('detail_asset', ['id' => $id]);
@@ -782,9 +866,6 @@ class AssetController extends AbstractController
             if ($newPass) {
                 $users->setPassword($form->get('plainPassword')->getData());
             }
-
-
-
                 $this->em->flush();
                 return $this->redirectToRoute('detail_user', ['id' => $id]);
             }
@@ -961,26 +1042,6 @@ class AssetController extends AbstractController
 
 
         return $this->redirectToRoute('detail_asset', ['id' => $id]);
-    }
-
-    #[Route('/search', name: 'search')]
-    public function search(Request $request): Response
-    {
-        $query = $request->query->get('query');
-
-//        $results = $this->getDoctrine()->getRepository(AssetsManager::class)->findBySearchQuery($query);
-        $results = $this->assetsManagerRepository->findBySearchQuery($query);
-
-        return $this->render('Assets/search.html.twig', ['results' => $results]);
-    }
-
-    #[Route('/user/{id}/assets', name: 'user_assets')]
-    public function userAssetsAction($id): Response
-    {
-        $userAssets = $this->assetsManagerRepository->findBy(['ownedBy' => $id]);
-//        $userAssets = $this->userRepository->findBy(['isOwnedBy' => $id]);
-
-        return $this->render('Assets/userAssets.html.twig', ['userAssets' => $userAssets]);
     }
 
     #[Route('/createProperty', name: 'create_property')]

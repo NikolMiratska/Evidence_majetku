@@ -128,9 +128,13 @@ class AssetsManager
     #[ORM\OneToMany(mappedBy: 'filenames', targetEntity: Files::class, cascade: ['persist'])]
     private Collection $files;
 
+    #[ORM\OneToMany(mappedBy: 'asset', targetEntity: UserHistory::class, cascade: ['persist'])]
+    private Collection $history;
+
     public function __construct()
     {
         $this->files = new ArrayCollection();
+        $this->history = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -579,4 +583,34 @@ class AssetsManager
 //    {
 //        return (string) $this->getFiles();
 //    }
+
+/**
+ * @return Collection<int, UserHistory>
+ */
+public function getHistory(): Collection
+{
+    return $this->history;
+}
+
+public function addHistory(UserHistory $history): static
+{
+    if (!$this->history->contains($history)) {
+        $this->history->add($history);
+        $history->setAsset($this);
+    }
+
+    return $this;
+}
+
+public function removeHistory(UserHistory $history): static
+{
+    if ($this->history->removeElement($history)) {
+        // set the owning side to null (unless already changed)
+        if ($history->getAsset() === $this) {
+            $history->setAsset(null);
+        }
+    }
+
+    return $this;
+}
     }

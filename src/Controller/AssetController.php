@@ -220,13 +220,11 @@ class AssetController extends AbstractController
     }
 
     #[Route('/details/{id}', name: 'detail_asset')]
-    public function assetDetail($id, Request $request, CategoryGenerator $categoryGenerator): Response
+    public function assetDetail($id,  Request $request, CategoryGenerator $categoryGenerator): Response
     {
         $assets = $this->assetsManagerRepository->find($id);
 
         $categories = $this->assetsManagerRepository->find($id);
-
-//        $files = $this->filesRepository->find($id);
 
         if (!$categories) {
             throw $this->createNotFoundException('Product not found');
@@ -235,38 +233,46 @@ class AssetController extends AbstractController
         $categoryName = $categories->getCategory();
         $category = $categoryGenerator->generateCategory($categoryName);
 
+        $image = $this->generateAssetImage2($assets);
 
-        // Generate a QR code containing the asset details page URL
-        $qrCode = new QrCode($this->generateUrl('detail_asset', ['id' => $id], UrlGeneratorInterface::ABSOLUTE_URL));
-        $qrCode->setSize(100); // Adjust the QR code size as needed
-
-        // Generate an image with asset details and overlay the QR code
-//        $image = $this->generateAssetImage($assets, $qrCode);
-////
-//
-//
-//
-//        // Get the QR code as a string
-//        $qrCodeString = $qrCode->writeString();
-//
-//        // Generate an image with asset details and overlay the QR code
-//        $image = $this->generateAssetImage($assets, $qrCodeString);
-        // Get the QR code as a data URI
-        $qrCodeDataUri = $qrCode->getData();
-
-//        $qrCodeDataUri = 'data:image/png;base64,' . base64_encode($qrCode->writeString());
-
-        $imagePath = $this->generateAssetImage($assets);
+        $response = new Response();
+        $response->headers->set('Content-Type', 'image/png');
+        $response->setContent($image);
 
 
         return $this->render('Assets/details.html.twig',
             [
                 'assets' => $assets,
                 'category' => $category,
-//                'files' => $files,
-                'image' => $imagePath,
-                'qrCode' => $qrCodeDataUri,
+                'image' => $response,
             ]);
+    }
+
+    private function generateAssetImage2(AssetsManager $asset): string
+    {
+        $width = 400;
+        $height = 200;
+
+        $image = imagecreatetruecolor($width, $height);
+
+        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
+        imagefill($image, 0, 0, $backgroundColor);
+
+        $textColor = imagecolorallocate($image, 0, 0, 0);
+
+        $name = $asset->getName();
+        $unitPrice = $asset->getUnitPrice();
+
+        imagettftext($image, 20, 0, 10, 40, $textColor, 'D:/MyDesktop/Symfony/evidence_majetku_v2/public/font/07558_CenturyGothic.ttf', "Name: $name");
+        imagettftext($image, 20, 0, 10, 80, $textColor, 'D:/MyDesktop/Symfony/evidence_majetku_v2/public/font/07558_CenturyGothic.ttf', "Price: $unitPrice");
+
+        ob_start();
+        imagepng($image);
+        $imageString = ob_get_clean();
+
+        imagedestroy($image);
+
+        return $imageString;
     }
 
     private function generateAssetImage($assets)
@@ -429,6 +435,7 @@ class AssetController extends AbstractController
     public function edit($id, Request $request): Response
     {
         $assets = $this->assetsManagerRepository->find($id);
+        $user = $this->userRepository->find($id);
         $form = $this->createForm(AssetFormType::class, $assets);
 
         $form->handleRequest($request);
@@ -533,6 +540,9 @@ class AssetController extends AbstractController
             $history->setAsset($assets);
             $history->setTimestamp(new \DateTime());
             $newAsset->addHistory($history);
+
+            $user->appendLog('udelal jsem tohle');
+            $this->em->persist($user);
 
                 $this->em->flush();
                 return $this->redirectToRoute('detail_asset', ['id' => $id]);
@@ -1020,7 +1030,7 @@ class AssetController extends AbstractController
 //        foreach ($file as $files) {
 //            $this->em->remove($files);
 //        }
-        dd($file);
+//        dd($file);
         $this->em->remove($file);
         $this->em->flush();
 
@@ -1043,86 +1053,5 @@ class AssetController extends AbstractController
 
 
         return $this->redirectToRoute('detail_asset', ['id' => $id]);
-    }
-
-    #[Route('/createProperty', name: 'create_property')]
-    public function createProperty(Request $request): Response
-    {
-        $asset =  new AssetsManager();
-        $form = $this->createForm(PropertyFormType::class, $asset);
-
-        $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid()){
-            $newAsset = $form->getData();
-
-            if ($asset->getOwnedBy() !== null){
-                $selectedOwner = $asset->getOwnedBy()->getName();
-            } else {
-                $newOwnerName = $form->get('newOwner')->getData();
-
-                $newOwner = new User();
-                $newOwner->setName($newOwnerName);
-
-                $selectedOwner = $newOwner;
-            }
-
-            if ($asset->getLocationAsset() !== null){
-                $selectedLocation = $asset->getLocationAsset()->getLocation();
-            } else {
-                $newLocationName = $form->get('newLocation')->getData();
-
-                $newLocation = new AssetsLocation();
-                $newLocation->setLocation($newLocationName);
-
-                $selectedLocation = $newLocation;
-            }
-
-            if ($asset->getTypeAsset() !== null){
-                $selectedType = $asset->getTypeAsset()->getType();
-            } else {
-                $newTypeName = $form->get('newType')->getData();
-
-                $newType = new AssetType();
-                $newType->setType($newTypeName);
-
-                $selectedType = $newType;
-            }
-
-            if ($asset->getWorkplaceAsset() !== null){
-                $selectedWorkplace = $asset->getWorkplaceAsset()->getWorkplace();
-            } else {
-                $newWorkplaceName = $form->get('newWorkplace')->getData();
-
-                $newWorkplace = new AssetsWorkplace();
-                $newWorkplace->setWorkplace($newWorkplaceName);
-
-                $selectedWorkplace = $newWorkplace;
-            }
-
-            if ($asset->getCategoryAsset() !== null){
-                $selectedCategory = $asset->getCategoryAsset()->getCategory();
-            } else {
-                $newCategoryName = $form->get('newCategory')->getData();
-
-                $newCategory = new AssetsCategory();
-                $newCategory->setCategory($newCategoryName);
-
-                $selectedCategory = $newCategory;
-            }
-
-            $this->em->persist($newAsset);
-            $this->em->persist($newOwner);
-            $this->em->persist($newLocation);
-            $this->em->persist($newType);
-            $this->em->persist($newWorkplace);
-            $this->em->persist($newCategory);
-            $this->em->flush();
-
-            return $this->redirectToRoute('create_property');
-        }
-
-        return $this->render('Assets/createProperty.html.twig', [
-            'form' => $form->createView()
-        ]);
     }
 }

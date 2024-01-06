@@ -89,17 +89,6 @@
                     <li>
                         <hr class="my-2 border-purple-400" />
                     </li>
-
-                    <li>
-                        <div class="px-6 my-6">
-                            <a href="/createProperty">
-                                <button class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 border border-gray-300 rounded-lg active:bg-purple-600 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:shadow-outline-purple">
-                                    Přidat hodnoty
-                                    <span class="ml-2" aria-hidden="true">+</span>
-                                </button>
-                            </a>
-                        </div>
-                    </li>
                 </ul>
             </div>
         </aside>
@@ -292,16 +281,18 @@
                                 </div>
                             </div>
                             {% if assets.files is not empty %}
-                            {% if assets.documentPath is not empty %}
+{#                            {% if assets.documentPath is not empty %}#}
                             <div class="grid gap-6 mb-8 md:grid-cols-2">
                                 <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
                                     <div class="grid gap-6 mb-8 md:grid-cols-2">
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
                                             {{ form_row(form.files) }}
                                         </h4>
+                                        {% if assets.documentPath is not empty %}
                                         <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
                                             {{ form_row(form.documentPath) }}
                                         </h4>
+                                        {% endif %}
                                         <ul class="text-m text-gray-600 dark:text-gray-400">
                                             <b class="text-purple-400">Nahrané dokumenty:</b>
                                             {% for file in assets.files %}
@@ -323,7 +314,7 @@
                                     </div>
                                 </div>
                                 {% endif %}
-                                {% endif %}
+{#                                {% endif %}#}
                                 <div></div>
                             <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
                             >Uložit úpravy</button>

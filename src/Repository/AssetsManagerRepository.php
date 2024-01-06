@@ -36,6 +36,7 @@ class AssetsManagerRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+
 //    public function getLastAssignedNumberForType($type)
 //    {
 //        return $this->createQueryBuilder('e')

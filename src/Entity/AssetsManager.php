@@ -7,12 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-/**
- * @ORM\Entity
- * @invenotyNumber(fields={"uniqueField"}, message="This value is already in use.")
- */
+
 #[ORM\Entity(repositoryClass: AssetsManagerRepository::class)]
+#[UniqueEntity(
+    fields: ['inventoryNumber'],message: 'Inventární číslo již existuje.',
+)]
 class AssetsManager
 {
     #[ORM\Id]
@@ -23,9 +24,6 @@ class AssetsManager
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
     #[ORM\Column(length: 255,  unique: true, nullable: true)]
     private ?string $inventoryNumber = null;
 

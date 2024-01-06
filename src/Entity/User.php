@@ -44,6 +44,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'userName', targetEntity: UserHistory::class, cascade: ['persist'])]
     private Collection $history;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $historyLog = null;
+
     public function __construct()
     {
         $this->isOwnedBy = new ArrayCollection();
@@ -206,5 +209,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getHistoryLog(): ?string
+    {
+        return $this->historyLog;
+    }
+
+    public function setHistoryLog(?string $historyLog): static
+    {
+        $this->historyLog = $historyLog;
+
+        return $this;
+    }
+
+    public function appendLog(string $log): void {
+        $this->historyLog = $this->historyLog . PHP_EOL . $log;
     }
 }

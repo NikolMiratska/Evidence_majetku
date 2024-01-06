@@ -1017,10 +1017,11 @@ class AssetController extends AbstractController
         if (!$file) {
             throw $this->createNotFoundException('File not found');
         }
-        foreach ($file as $files) {
-            $this->em->remove($files);
-        }
-//        $this->em->remove($file);
+//        foreach ($file as $files) {
+//            $this->em->remove($files);
+//        }
+        dd($file);
+        $this->em->remove($file);
         $this->em->flush();
 
 //        $assets = $this->assetsManagerRepository->find($id);

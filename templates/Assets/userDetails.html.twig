@@ -277,41 +277,41 @@
                                         </tbody>
                             </table>
                             <br>
-                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-                                Historie uživatele {{ users.name }}
-                            </h2>
-                            <table class="w-full whitespace-no-wrap">
-                                <thead>
-                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                    <th class="px-4 py-3">Akce</th>
-                                    <th class="px-4 py-3">Majetek</th>
-                                    <th class="px-4 py-3">Čas</th>
-                                </tr>
-                                </thead>
+{#                            <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">#}
+{#                                Historie uživatele {{ users.name }}#}
+{#                            </h2>#}
+{#                            <table class="w-full whitespace-no-wrap">#}
+{#                                <thead>#}
+{#                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">#}
+{#                                    <th class="px-4 py-3">Akce</th>#}
+{#                                    <th class="px-4 py-3">Majetek</th>#}
+{#                                    <th class="px-4 py-3">Čas</th>#}
+{#                                </tr>#}
+{#                                </thead>#}
 
-                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                                {% for entry in histories %}
-                                    <tr class="text-gray-700 dark:text-gray-400">
-                                        <td class="px-4 py-3 text-sm">
-                                            {{ entry.action }}
-                                        </td>
+{#                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">#}
+{#                                {% for entry in history %}#}
+{#                                    <tr class="text-gray-700 dark:text-gray-400">#}
+{#                                        <td class="px-4 py-3 text-sm">#}
+{#                                            {{ entry.action }}#}
+{#                                        </td>#}
 
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center text-sm">
-                                                <div>
-                                                    <a href="/details/{{ asset.id }}">
-                                                        <p class="font-semibold hover:underline">{{ entry.asset.name }}</p>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm">
-                                            {{ entry.timestamp|date('Y-m-d H:i:s') }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+{#                                        <td class="px-4 py-3">#}
+{#                                            <div class="flex items-center text-sm">#}
+{#                                                <div>#}
+{#                                                    <a href="/details/{{ asset.id }}">#}
+{#                                                        <p class="font-semibold hover:underline">{{ entry.asset.name }}</p>#}
+{#                                                    </a>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </td>#}
+{#                                        <td class="px-4 py-3 text-sm">#}
+{#                                            {{ entry.timestamp|date('Y-m-d H:i:s') }}#}
+{#                                        </td>#}
+{#                                    </tr>#}
+{#                                {% endfor %}#}
+{#                                </tbody>#}
+{#                            </table>#}
                             <br>
                         </div>
                     </main>

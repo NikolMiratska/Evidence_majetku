@@ -96,54 +96,6 @@ class AssetController extends AbstractController
         if($form->isSubmitted() && $form->isValid()){
             $newAsset = $form->getData();
 
-//            $documentPath = $form->get('documentPath')->getData();
-//            if($documentPath){
-//                $newFileName = uniqid() . '.' . $documentPath->guessExtension();
-//
-//                try {
-//                    $documentPath->move(
-//                        $this->getParameter('kernel.project_dir') . '/public/uploads',
-//                        $newFileName
-//                    );
-//                } catch (FileException $e) {
-//                    return new Response($e->getMessage());
-//                }
-//
-//                $newAsset->setDocumentPath('/uploads/' . $newFileName);
-//            }
-
-//            $documentPaths = $form->get('documentPaths')->getData();
-//            if($documentPaths){
-//
-//                foreach ($newAsset as $documentPaths){
-//                    $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
-//
-//                    try {
-//                        $documentPaths->move(
-//                            $this->getParameter('kernel.project_dir') . '/public/uploads',
-//                            $newFileName
-//                        );
-//                    } catch (FileException $e) {
-//                        return new Response($e->getMessage());
-//                    }
-//
-//                    $newAsset->setDocumentPath('/uploads/' . $newFileName);
-//                }
-////                $newFileName = uniqid() . '.' . $documentPaths->guessExtension();
-////
-////                try {
-////                    $documentPaths->move(
-////                        $this->getParameter('kernel.project_dir') . '/public/uploads',
-////                        $newFileName
-////                    );
-////                } catch (FileException $e) {
-////                    return new Response($e->getMessage());
-////                }
-////
-////                $newAsset->setDocumentPath('/uploads/' . $newFileName);
-//            }
-//            $uploadedFiles = $request->files->get('files');
-
             $uploadedFiles = $form->get('files')->getData();
             if($uploadedFiles){
             foreach ($uploadedFiles as $uploadedFile) {
@@ -233,129 +185,14 @@ class AssetController extends AbstractController
         $categoryName = $categories->getCategory();
         $category = $categoryGenerator->generateCategory($categoryName);
 
-        $image = $this->generateAssetImage2($assets);
-
-        $response = new Response();
-        $response->headers->set('Content-Type', 'image/png');
-        $response->setContent($image);
-
 
         return $this->render('Assets/details.html.twig',
             [
                 'assets' => $assets,
                 'category' => $category,
-                'image' => $response,
             ]);
     }
 
-    private function generateAssetImage2(AssetsManager $asset): string
-    {
-        $width = 400;
-        $height = 200;
-
-        $image = imagecreatetruecolor($width, $height);
-
-        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
-        imagefill($image, 0, 0, $backgroundColor);
-
-        $textColor = imagecolorallocate($image, 0, 0, 0);
-
-        $name = $asset->getName();
-        $unitPrice = $asset->getUnitPrice();
-
-        imagettftext($image, 20, 0, 10, 40, $textColor, 'D:/MyDesktop/Symfony/evidence_majetku_v2/public/font/07558_CenturyGothic.ttf', "Name: $name");
-        imagettftext($image, 20, 0, 10, 80, $textColor, 'D:/MyDesktop/Symfony/evidence_majetku_v2/public/font/07558_CenturyGothic.ttf', "Price: $unitPrice");
-
-        ob_start();
-        imagepng($image);
-        $imageString = ob_get_clean();
-
-        imagedestroy($image);
-
-        return $imageString;
-    }
-
-    private function generateAssetImage($assets)
-    {
-        // Use GD library to create an image with asset details
-        $width = 300;
-        $height = 200;
-        $image = imagecreatetruecolor($width, $height);
-        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
-        $textColor = imagecolorallocate($image, 0, 0, 0);
-
-        // Customize the text content based on your asset properties
-        $text = "Asset Name: " . $assets->getName() . "\nPrice: $" . $assets->getUnitPrice();
-
-        // Add text to the image
-        imagestring($image, 5, 10, 10, $text, $textColor);
-
-        // Save or output the image based on your needs
-        // Save the image to a file
-//        $imagePath = '/public/assets/image.png';
-//        imagepng($image, $imagePath);
-//        imagedestroy($image);
-
-        $directory = '/public/generatedImage/';
-        if (!file_exists($directory)) {
-            mkdir($directory, 0777, true); // Create the directory recursively
-        }
-
-// Save the image to a file
-        $imagePath = $directory . 'image.png';
-        imagepng($image, $imagePath);
-
-// Free up memory from the image resource
-        imagedestroy($image);
-
-
-        return $imagePath; // Return the path to the generated image
-    }
-
-//    private function getQrCodeString(QrCode $qrCode): string
-//    {
-//        // Use the ResultWriter to get the QR code as a string
-//        $resultWriter = new \Endroid\QrCode\Writer\Result\ResultWriter();
-//        $qrCodeString = $resultWriter->write($qrCode, 'data-url');
-//
-//        return $qrCodeString;
-//    }
-
-//    private function generateAssetImage($assets, QrCode $qrCode)
-//    {
-//        // Use GD library to create an image with asset details
-//        $width = 300;
-//        $height = 200;
-//        $image = imagecreatetruecolor($width, $height);
-//        $backgroundColor = imagecolorallocate($image, 255, 255, 255);
-//        $textColor = imagecolorallocate($image, 0, 0, 0);
-//
-//        // Customize the text content based on your asset properties
-//        $text = "Asset Name: " . $assets->getName() . "\nPrice: $" . $assets->getPrice();
-//
-//        // Add text to the image
-//        imagestring($image, 5, 10, 10, $text, $textColor);
-//
-//        // Save or output the image based on your needs
-//        // Save the image to a file
-//        $imagePath = '/public/generatedImage/image.png';
-//        imagepng($image, $imagePath);
-//        imagedestroy($image);
-//
-//
-//        // ... Your image generation logic ...
-//
-//        // Create an image resource with the QR code
-//        $qrCodeImage = imagecreatefromstring($qrCode->writeString());
-//
-//        // Merge the QR code image onto the main image
-//        imagecopymerge($image, $qrCodeImage, 10, 10, 0, 0, imagesx($qrCodeImage), imagesy($qrCodeImage), 50);
-//
-//        // Save or output the image with the QR code
-//        // ...
-//
-//        return $imagePath; // Return the path to the generated image
-//    }
     #[Route('/userDetails/{id}', name: 'detail_user')]
     public function userDetail($id, Request $request): Response
     {
@@ -363,15 +200,13 @@ class AssetController extends AbstractController
 
         $assignedAssets = $users->getIsOwnedBy();
 
-        $histories = $users->getHistory();
-
-//        dd($histories);
+        $history = $users->getHistoryLog();
 
         return $this->render('Assets/userDetails.html.twig',
             [
                 'users' => $users,
                 'assignedAssets' => $assignedAssets,
-                'histories' => $histories,
+                'history' => $history,
             ]);
     }
 
@@ -483,32 +318,6 @@ class AssetController extends AbstractController
                     }
                 }}
 
-
-
-
-//            if ($documentPath){
-//                $documentPaths = $form->get('documentPaths')->getData();
-//
-//                foreach ($documentPaths as $documentPath) {
-//                    // Handle each uploaded file
-//                    if ($documentPath instanceof UploadedFile) {
-//                        $newFileName = uniqid() . '.' . $documentPath->guessExtension();
-//
-//                        try {
-//                            $documentPath->move(
-//                                $this->getParameter('kernel.project_dir') . '/public/uploads',
-//                                $newFileName
-//                            );
-//                        } catch (FileException $e) {
-//                            return new Response($e->getMessage());
-//                        }
-//
-//                        $assets->setDocumentPath('/uploads/' . $newFileName);
-//                        $this->em->flush();
-//                        return $this->redirectToRoute('list');
-//                    }
-//                }
-
                 $assets->setName($form->get('name')->getData());
                 $assets->setInventoryNumber($form->get('inventoryNumber')->getData());
                 $assets->setDescription($form->get('description')->getData());
@@ -540,9 +349,6 @@ class AssetController extends AbstractController
             $history->setAsset($assets);
             $history->setTimestamp(new \DateTime());
             $newAsset->addHistory($history);
-
-            $user->appendLog('udelal jsem tohle');
-            $this->em->persist($user);
 
                 $this->em->flush();
                 return $this->redirectToRoute('detail_asset', ['id' => $id]);
@@ -608,27 +414,6 @@ class AssetController extends AbstractController
 
         return $this->redirectToRoute('workplace');
     }
-
-//    #[Route('/details/{id}')]
-//    public function generateCategoryForProduct(CategoryGenerator $categoryGenerator, int $id)
-//    {
-//        // Retrieve the product entity from the database
-//        $categories = $this->assetsCategoryRepository->find($id);
-//
-//        if (!$categories) {
-//            throw $this->createNotFoundException('Product not found');
-//        }
-//
-//        // Access the 'name' column value of the product entity
-//        $productName = $categories->getCategory();
-//
-//        // Use the product name to generate a category
-//        $category = $categoryGenerator->generateCategory($productName);
-//
-//        return $this->render('Assets/details.html.twig', [
-//            'category' => $category,
-//        ]);
-//    }
 
     #[Route('/users', name: 'user')]
     public function usersList(Request $request, EntityManagerInterface $em, PaginatorInterface $paginator): Response
@@ -994,34 +779,6 @@ class AssetController extends AbstractController
     #[Route('deleteFile/{id}', name: 'deleteFile')]
     public function deleteFile($id): Response
     {
-//        $assets = $this->assetsManagerRepository->find($id);
-//
-//        if (!$assets) {
-//            throw $this->createNotFoundException('Asset not found');
-//        }
-//
-//        if (!in_array('/uploads/' . $filename, $assets->getDocumentPaths())) {
-//            throw $this->createNotFoundException('File not found');
-//        }
-//
-//        $filePath = $this->getParameter('kernel.project_dir') . '/public/uploads/' . $filename;
-//
-//        if (!file_exists($filePath)) {
-//            throw $this->createNotFoundException('File not found');
-//        }
-//
-//        try {
-//            unlink($filePath);
-//        } catch (\Exception $e) {
-//            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-//        }
-//
-//        // Remove the filename from the entity's documentPaths array
-//        $assets->removeDocumentPath('/uploads/' . $filename);
-//
-//        // Update the entity in the database
-//        $this->em->flush();
-
         $file = $this->filesRepository->find($id);
 
         if (!$file) {
@@ -1030,27 +787,8 @@ class AssetController extends AbstractController
 //        foreach ($file as $files) {
 //            $this->em->remove($files);
 //        }
-//        dd($file);
         $this->em->remove($file);
         $this->em->flush();
-
-//        $assets = $this->assetsManagerRepository->find($id);
-//
-//        if (!$assets) {
-//            throw $this->createNotFoundException('Asset not found');
-//        }
-//
-//        // Assuming a OneToMany association between AssetsManager and File entities
-//        $files = $assets->getFiles();
-//
-////        $entityManager = $this->getDoctrine()->getManager();
-//
-//        foreach ($files as $file) {
-//            $this->em->remove($file);
-//        }
-//
-//        $this->em->flush();
-
 
         return $this->redirectToRoute('detail_asset', ['id' => $id]);
     }

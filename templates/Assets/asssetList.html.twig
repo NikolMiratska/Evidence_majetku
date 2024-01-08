@@ -144,12 +144,6 @@
                                     </a>
                                 </div>
                             </div>
-                            <ul id="resultsContainer">
-{#                                {% for result in results %}#}
-{#                                    <li>{{ result.name }}</li>#}
-{#                                    #}{# Add more fields as needed #}
-{#                                {% endfor %}#}
-                            </ul>
                             <table class="w-full whitespace-no-wrap">
                                 <thead>
                                 <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
@@ -193,14 +187,12 @@
                                         {{ asset.inventoryNumber }}
                                     </td>
 
-
                                     <td class="px-4 py-3 text-xs">
                                             {% if asset.ownedBy %}
                                         <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
                                             <a href="/userDetails/{{ asset.ownedBy.id }}">
                                                 {{ asset.ownedBy.name }}
                                             </a>
-{#                                    <a href="{{ path('user_assets', {'id': assets.user_assets}) }}">{{ asset.ownedBy.name }}</a>#}
                                         </span>
                                             {% else %}
                                         <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
@@ -238,22 +230,4 @@
             </main>
         </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#searchInput').on('input', function () {
-                var query = $(this).val();
-
-                $.ajax({
-                    url: '/search',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function (data) {
-                        $('#resultsContainer').html(data);
-                    }
-                });
-            });
-        });
-    </script>
 {% endblock %}

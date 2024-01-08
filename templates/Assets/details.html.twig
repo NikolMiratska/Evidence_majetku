@@ -211,17 +211,9 @@
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Kategorie:</b> {% if assets.categoryAsset %} <a href="/categoryDetails/{{ assets.categoryAsset.id }}"> Redbit-{{ category }} </a>{% endif %}
                                 </p>
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b class="text-red-700">OLDKategorie:</b> Redbit-{{ assets.categoryAsset }}#}
-{#                                </p>#}
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Pracoviště:</b> {% if assets.workplaceAsset %} <a href="/workplaceDetails/{{ assets.workplaceAsset.id }}"> {{ assets.workplaceAsset }} </a>{% endif %}
                                 </p>
-{#                                <img src="{{ qrCode.dataUri }}" alt="QR Code">#}
-{#                                <img src="{{ qrCode.data }}" alt="QR Code">#}
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b class="text-purple-400">QR Code:</b> <img src="{{ qrCode }}" alt="QR Code">#}
-{#                                </p>#}
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">QR Code:</b>
                                 <form id="generate-form">
@@ -245,22 +237,38 @@
                                 </p>
                                 <p class="text-m text-gray-600 dark:text-gray-400" id="body">
                                     <b class="text-purple-400">Karta:</b>
-                                    <button onclick="GFG_Fun()">
-                                        click here
-                                    </button>
-                                <h2 id="result" style="color:green;"></h2>
-                                {# Example code in your Twig template #}
-                                <h1>{{ assets.name }} Details</h1>
-                                <img src="{{ path('detail_asset', {'id': assets.id}) }}" alt="{{ assets.name }}">
-                                {# Other details... #}
-{#                                    <img src="{{ image }}" alt="Asset Image">#}
+                                    <div style="position: relative; text-align: center; color: white">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5WY2egxR9meeFo6cvzwwSN5DHUKGmvil8Tg&usqp=CAU" alt="Asset Card">
+                                    <div style="position: absolute; bottom: 8px; left: 16px;" class="text-m text-gray-600 dark:text-gray-800">
+                                        <ul>
+                                            <li class="inline-block"><b class="text-purple-600">Vlastník: </b></li>
+                                            <li class="inline-block">{{ assets.ownedBy }}</li>
+                                            {% if assets.ownedBy %}
+                                            {% if assets.ownedBy.profilePic %}
+                                            <li class="inline-block">
+                                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
+                                        <img class="object-cover w-full h-full rounded-full" src="{{ assets.ownedBy.profilePic }}" alt="" loading="lazy">
+                                        <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
+                                        </div>
+                                            </li>
+                                            {% endif %}
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                    <div style="position: absolute; top: 8px; left: 16px;" class="text-m text-gray-600 dark:text-gray-800"><b class="text-purple-600">Název:</b> {{ assets.name }}</div>
+                                    <div style="position: absolute; top: 12px; right: 77%;" class="text-black">
+                                        <div class="relative hidden w-12 h-12 mr-3 rounded-full md:block">
+                                            <img class="object-cover w-full h-full rounded-full" src="{{ assets.documentPath }}" alt="" loading="lazy">
+                                            <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div></div>
+                                    </div>
+                                    <div style="position: absolute; top: 30px; left: 16px;" class="text-m text-gray-600 dark:text-gray-800"><b class="text-purple-600">Inventární číslo:</b> {{ assets.inventoryNumber }}</div>
+                                    <div style="position: absolute; top: 52px; left: 16px;" class="text-m text-gray-600 dark:text-gray-800"><b class="text-purple-600">Umístění:</b> {{ assets.locationAsset }}</div>
+                                    <div style="position: absolute; top: 74px; left: 16px;" class="text-m text-gray-600 dark:text-gray-800"><b class="text-purple-600">Pracoviště:</b> {{ assets.workplaceAsset }}</div>
+                                    </div>
                                 </p>
                             </div>
 
                             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 border border-purple-400">
-{#                                <p class="text-m text-gray-600 dark:text-gray-400">#}
-{#                                    <b class="text-purple-400">Vlastník:</b> {{ assets.owner }}#}
-{#                                </p>#}
                                 <p class="text-m text-gray-600 dark:text-gray-400">
                                     <b class="text-purple-400">Dodavatel:</b> {{ assets.supplier }}
                                 </p>
@@ -315,7 +323,6 @@
                                     {% for file in assets.files %}
                                         <li class="text-m text-gray-600 dark:text-gray-400">
                                     <a href="{{ path('download_file', {'documentPath': file.fileName}) }}" class="hover:underline">{{ file.fileName }}</a>
-{#                                            <a href="{{ path('deleteFile', {'id': file.id}) }}" class="text-red-700 hover:underline" onclick="return confirm('Opravdu chcete soubor {{ file.fileName|upper }} smazat?')">Smazat</a>#}
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -353,16 +360,6 @@
             referrerpolicy="no-referrer"
     ></script>
     <script>
-        let res = document.getElementById('result');
-
-        function GFG_Fun() {
-            let img = document.createElement('img');
-            img.src =
-                'https://media.geeksforgeeks.org/wp-content/uploads/20190529122828/bs21.png';
-            document.getElementById('body').appendChild(img);
-        }
-    </script>
-    <script>
         const form = document.getElementById("generate-form");
         const qr = document.getElementById("qrcode");
 
@@ -373,23 +370,18 @@
             clearUI();
 
             const url = document.getElementById("url").value;
-            // const size = document.getElementById("size").value;
 
             // Validate url
             if (url === "") {
                 alert("Please enter a URL");
             } else {
                 showSpinner();
-                // Show spinner for 1 sec
                 setTimeout(() => {
                     hideSpinner();
                     generateQRCode(url,);
                     showScanner();
-                    // Generate the save button after the qr code image src is ready
                     setTimeout(() => {
-                        // Get save url
                         const saveUrl = qr.querySelector("canvas").toDataURL();
-                        // Create save button
                         createSaveBtn(saveUrl);
                     }, 50);
                 }, 1000);
@@ -405,7 +397,6 @@
             });
         };
 
-        // Clear QR code and save button
         const clearUI = () => {
             qr.innerHTML = "";
             const saveBtn = document.getElementById("save-link");
@@ -414,25 +405,21 @@
             }
         };
 
-        // hide  scanner
         const showScanner = () => {
             const scanner = document.getElementById("qrCodeContainer");
             scanner.style.display = "block";
         };
 
-        // Show spinner
         const showSpinner = () => {
             const spinner = document.getElementById("spinner");
             spinner.style.display = "block";
         };
 
-        // Hide spinner
         const hideSpinner = () => {
             const spinner = document.getElementById("spinner");
             spinner.style.display = "none";
         };
 
-        // Create save button to download QR code as image
         const createSaveBtn = (saveUrl) => {
             const link = document.createElement("a");
             link.id = "save-link";
@@ -452,5 +439,3 @@
 
     </script>
 {% endblock %}
-
-
